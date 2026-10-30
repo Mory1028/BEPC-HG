@@ -151,11 +151,39 @@ mark{background:var(--mark);color:var(--ink);font-family:var(--mono);font-weight
 .dots button{width:30px;height:30px;border:1.5px solid var(--line);background:var(--sheet);font-family:var(--mono);font-size:12px;padding:0}
 .dots button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .dots button.cur{outline:2px solid var(--blue);outline-offset:1px}
+.hello{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.mebtn{display:flex;align-items:center;gap:8px;background:var(--sheet);border:1.5px solid var(--ink);padding:4px 12px 4px 4px;font-weight:700;font-size:15px}
+.av{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-family:var(--display);font-weight:900;font-size:15px;flex:none}
+.big-av{width:56px;height:56px;font-size:26px}
+.me{display:flex;align-items:center;gap:14px;margin-top:16px}
+.me b{display:block;font-family:var(--display);font-weight:900;font-size:24px;line-height:1.1}
+.me span{color:var(--muted);font-size:15px}
+.form{display:grid;gap:6px;margin-top:10px}
+.form label{font-weight:700;font-size:15px;margin-top:8px}
+.form input:not([type=checkbox]){width:100%;font:inherit;font-size:18px;padding:12px;border:2px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:0}
+.form input:focus{border-color:var(--blue);outline:none}
+.opt-l{font-weight:400;color:var(--muted)}
+.chk{display:flex;gap:8px;align-items:center;font-weight:400!important}
+.err{color:var(--red);font-weight:700;min-height:1.2em;margin:4px 0 0}
+.profs{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:10px}
+.prof{display:flex;align-items:center;gap:10px;background:var(--sheet);border:2px solid var(--line);padding:10px;font-weight:700;text-align:left;min-width:0}
+.prof span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prof.on{border-color:var(--blue);background:var(--blue-soft)}
+.subj{display:grid;grid-template-columns:90px 1fr 44px;align-items:center;gap:10px;margin-bottom:8px;font-size:15px}
+.subj b{font-family:var(--mono);text-align:right}
+.bar.wide{max-width:none;height:10px}
+.chart{width:100%;height:auto;display:block}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .gt{fill:var(--muted);font-size:10px;font-family:var(--mono)}
+.chart .ln{stroke:var(--blue);stroke-width:2.5}
+.chart .dt{fill:var(--blue)}
+.chart .vt{fill:var(--ink);font-size:12px;font-weight:700;font-family:var(--mono)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 </head><body>
 <div class="wrap" id="app"></div>
+<script src="config.js"></script>
 
 <script>
 // Banque de questions BEPC Guinée – Histoire & Géographie (programme de 10e année)
@@ -840,10 +868,205 @@ CHAPTERS.forEach(c => c.q.forEach((q, i) => q.id = c.id + '-' + i));
 const ALLQ = CHAPTERS.flatMap(c => c.q.map(q => Object.assign(q, { ch: c.id, m: c.m })));
 const QID = Object.fromEntries(ALLQ.map(q => [q.id, q]));
 const VOCAB = { H: 'h9', G: 'g7' };
-const KEY = 'bepc-gn-hg-v1';
-let S = { seen: {}, exams: [] };
-try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (_) {}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} };
+/* ---------- Comptes et espace personnel ---------- */
+const CFG = window.BEPC_FIREBASE || null;          // config Firebase (fichier config.js) : comptes en ligne
+const OLDKEY = 'bepc-gn-hg-v1', LKEY = 'bepc-gn-profiles-v1';
+const blank = () => ({ seen: {}, exams: [], days: [] });
+let S = blank(), USER = null, FB = null, saveT = 0;
+const today = () => new Date().toISOString().slice(0, 10);
+function readLocal() { try { return JSON.parse(localStorage.getItem(LKEY)) || { profiles: {}, current: null }; } catch (_) { return { profiles: {}, current: null }; } }
+function writeLocal(L) { try { localStorage.setItem(LKEY, JSON.stringify(L)); } catch (_) {} }
+function hashPin(p) { let h = 5381; for (const c of 'bepc:' + p) h = ((h << 5) + h + c.charCodeAt(0)) | 0; return String(h >>> 0); }
+function setStatus(t) { const el = document.getElementById('sync'); if (el) el.textContent = t; }
+const save = () => {
+  if (!USER) return;
+  if (USER.mode === 'local') { const L = readLocal(); if (L.profiles[USER.id]) { L.profiles[USER.id].S = S; writeLocal(L); } return; }
+  try { localStorage.setItem('bepc-cache-' + USER.id, JSON.stringify(S)); } catch (_) {}
+  clearTimeout(saveT); setStatus('Enregistrement…');
+  saveT = setTimeout(() => {
+    FB.db.collection('eleves').doc(USER.id).set({ name: USER.name, school: USER.school || '', S: JSON.stringify(S), updated: Date.now() }, { merge: true })
+      .then(() => setStatus('Progression enregistrée en ligne')).catch(() => setStatus('Hors ligne : enregistré sur ce téléphone'));
+  }, 1200);
+};
+function loadScript(src) { return new Promise((ok, ko) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); }); }
+async function boot() {
+  if (CFG) {
+    $app.innerHTML = '<p class="hint" style="padding-top:40px">Chargement de ton espace…</p>';
+    try {
+      const V = 'https://cdn.jsdelivr.net/npm/firebase@10.12.2/';
+      await loadScript(V + 'firebase-app-compat.js');
+      await Promise.all([loadScript(V + 'firebase-auth-compat.js'), loadScript(V + 'firebase-firestore-compat.js')]);
+      firebase.initializeApp(CFG);
+      FB = { auth: firebase.auth(), db: firebase.firestore() };
+      FB.auth.onAuthStateChanged(async u => {
+        if (!u) { USER = null; return login(); }
+        let doc = null; try { doc = await FB.db.collection('eleves').doc(u.uid).get(); } catch (_) {}
+        const d = doc && doc.exists ? doc.data() : {};
+        let cached = null; try { cached = JSON.parse(localStorage.getItem('bepc-cache-' + u.uid)); } catch (_) {}
+        USER = { mode: 'cloud', id: u.uid, name: d.name || u.displayName || 'Élève', school: d.school || '', email: u.email };
+        S = Object.assign(blank(), d.S ? JSON.parse(d.S) : (cached || {}));
+        home();
+      });
+      return;
+    } catch (e) { /* si Firebase ne charge pas, on passe en profils locaux */ }
+  }
+  const L = readLocal();
+  if (!Object.keys(L.profiles).length) {           // reprise d'une ancienne progression
+    try { const old = JSON.parse(localStorage.getItem(OLDKEY)); if (old) L.legacy = old; } catch (_) {}
+  }
+  if (L.current && L.profiles[L.current]) { useLocal(L, L.current); return; }
+  login();
+}
+function useLocal(L, id) {
+  L.current = id; writeLocal(L);
+  const p = L.profiles[id];
+  USER = { mode: 'local', id, name: p.name };
+  S = Object.assign(blank(), p.S || {});
+  home();
+}
+function logout() {
+  stopTimer();
+  if (USER && USER.mode === 'cloud') { FB.auth.signOut(); return; }
+  const L = readLocal(); L.current = null; writeLocal(L); USER = null; login();
+}
+function login(view) {
+  stopTimer(); scrollTop();
+  const cloud = !!FB;
+  view = view || (cloud ? 'in' : 'pick');
+  const L = cloud ? null : readLocal();
+  if (L) { try { const old = JSON.parse(localStorage.getItem(OLDKEY)); if (old && Object.keys(old.seen || {}).length) L.legacy = old; } catch (_) {} }
+  const profs = L ? Object.entries(L.profiles) : [];
+  if (!cloud && view === 'pick' && !profs.length) view = 'new';
+  let body = '';
+  if (cloud && view === 'in') body = `
+    <form id="f" class="form" novalidate>
+      <label for="em">Adresse email</label><input id="em" type="email" autocomplete="email" required>
+      <label for="pw">Mot de passe</label><input id="pw" type="password" autocomplete="current-password" required>
+      <button class="start" type="submit">Me connecter</button>
+      <p class="err" id="er" role="alert"></p>
+      <p class="hint">Pas encore de compte ? <button type="button" class="linkbtn" id="toNew">Créer mon espace</button> · <button type="button" class="linkbtn" id="forgot">Mot de passe oublié</button></p>
+    </form>`;
+  else if (cloud && view === 'new') body = `
+    <form id="f" class="form" novalidate>
+      <label for="nm">Prénom</label><input id="nm" autocomplete="given-name" maxlength="20" required>
+      <label for="sc">École et classe <span class="opt-l">(facultatif)</span></label><input id="sc" maxlength="40" placeholder="Ex. : Collège Donka, 10e A">
+      <label for="em">Adresse email</label><input id="em" type="email" autocomplete="email" required>
+      <label for="pw">Mot de passe (6 caractères minimum)</label><input id="pw" type="password" autocomplete="new-password" required>
+      <button class="start" type="submit">Créer mon espace</button>
+      <p class="err" id="er" role="alert"></p>
+      <p class="hint">Déjà un compte ? <button type="button" class="linkbtn" id="toIn">Me connecter</button></p>
+    </form>`;
+  else if (view === 'pick') body = `
+    <p class="hint">Choisis ton profil puis tape ton code à 4 chiffres.</p>
+    <div class="profs">${profs.map(([id, p]) => `<button class="prof" data-id="${id}"><span class="av">${esc(p.name.slice(0, 1).toUpperCase())}</span><span>${esc(p.name)}</span></button>`).join('')}</div>
+    <div id="pinBox"></div>
+    <button class="start" id="toNew" style="background:var(--ink)">Nouveau profil</button>`;
+  else body = `
+    <form id="f" class="form" novalidate>
+      <label for="nm">Ton prénom</label><input id="nm" autocomplete="given-name" maxlength="20" required>
+      <label for="pn">Choisis un code secret à 4 chiffres</label><input id="pn" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" required>
+      ${L && L.legacy ? '<label class="chk"><input type="checkbox" id="lg" checked> Reprendre la progression déjà faite sur ce téléphone</label>' : ''}
+      <button class="start" type="submit">Créer mon profil</button>
+      <p class="err" id="er" role="alert"></p>
+      ${profs.length ? '<p class="hint"><button type="button" class="linkbtn" id="toPick">Revenir aux profils</button></p>' : ''}
+    </form>`;
+  $app.innerHTML = `
+    <div class="hero">
+      <div class="flag" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h1>Réussir le <span>BEPC</span> Histoire-Géo</h1>
+      <p class="sub">${cloud ? 'Connecte-toi pour retrouver ton espace et ta progression sur n’importe quel téléphone.' : 'Chaque élève a son espace : sa progression, ses questions à revoir et ses notes d’examens blancs.'}</p>
+    </div>
+    <h2 class="qtext">${view === 'in' ? 'Connexion' : view === 'pick' ? 'Qui révise ?' : cloud ? 'Créer mon espace' : 'Nouveau profil'}</h2>` + body;
+  const er = t => { const e = document.getElementById('er'); if (e) e.textContent = t; };
+  const on = (id, fn) => { const e = document.getElementById(id); if (e) e.onclick = fn; };
+  on('toNew', () => login('new')); on('toIn', () => login('in')); on('toPick', () => login('pick'));
+  const FR = { 'auth/invalid-email': 'Adresse email invalide.', 'auth/user-not-found': 'Aucun compte avec cet email.', 'auth/wrong-password': 'Mot de passe incorrect.', 'auth/invalid-credential': 'Email ou mot de passe incorrect.', 'auth/email-already-in-use': 'Un compte existe déjà avec cet email. Connecte-toi.', 'auth/weak-password': 'Le mot de passe doit contenir au moins 6 caractères.', 'auth/network-request-failed': 'Pas de connexion internet. Réessaie.', 'auth/too-many-requests': 'Trop d’essais. Attends quelques minutes.' };
+  const fbErr = e => er(FR[e.code] || 'Erreur : ' + (e.message || e.code));
+  on('forgot', () => {
+    const em = document.getElementById('em').value.trim();
+    if (!em) return er('Tape d’abord ton adresse email, puis touche « Mot de passe oublié ».');
+    FB.auth.sendPasswordResetEmail(em).then(() => er('Un email pour changer ton mot de passe a été envoyé à ' + em + '.')).catch(fbErr);
+  });
+  $app.querySelectorAll('.prof').forEach(b => b.onclick = () => {
+    const id = b.dataset.id, p = L.profiles[id];
+    $app.querySelectorAll('.prof').forEach(x => x.classList.toggle('on', x === b));
+    document.getElementById('pinBox').innerHTML = `<form id="pf" class="form"><label for="pin">Code de ${esc(p.name)}</label><input id="pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"><button class="start" type="submit">Entrer</button><p class="err" id="er" role="alert"></p></form>`;
+    const pin = document.getElementById('pin'); pin.focus();
+    document.getElementById('pf').onsubmit = e => { e.preventDefault(); hashPin(pin.value) === p.pin ? useLocal(readLocal(), id) : (er('Code incorrect.'), pin.select()); };
+  });
+  const f = document.getElementById('f');
+  if (f) f.onsubmit = e => {
+    e.preventDefault(); er('');
+    const v = id => (document.getElementById(id) || {}).value || '';
+    if (cloud && view === 'in') {
+      FB.auth.signInWithEmailAndPassword(v('em').trim(), v('pw')).catch(fbErr);
+    } else if (cloud) {
+      const name = v('nm').trim(); if (!name) return er('Indique ton prénom.');
+      FB.auth.createUserWithEmailAndPassword(v('em').trim(), v('pw')).then(cr =>
+        FB.db.collection('eleves').doc(cr.user.uid).set({ name, school: v('sc').trim(), S: JSON.stringify(blank()), created: Date.now(), updated: Date.now() })
+          .then(() => { USER = { mode: 'cloud', id: cr.user.uid, name, school: v('sc').trim(), email: cr.user.email }; S = blank(); home(); })
+      ).catch(fbErr);
+    } else {
+      const name = v('nm').trim(), pin = v('pn');
+      if (!name) return er('Indique ton prénom.');
+      if (!/^\d{4}$/.test(pin)) return er('Le code doit contenir exactement 4 chiffres.');
+      const L2 = readLocal();
+      if (Object.values(L2.profiles).some(p => p.name.toLowerCase() === name.toLowerCase())) return er('Ce prénom existe déjà sur ce téléphone. Ajoute l’initiale de ton nom.');
+      const id = 'p' + Date.now().toString(36);
+      const useLegacy = document.getElementById('lg') && document.getElementById('lg').checked;
+      L2.profiles[id] = { name, pin: hashPin(pin), created: Date.now(), S: useLegacy ? Object.assign(blank(), L.legacy) : blank() };
+      if (useLegacy) { try { localStorage.removeItem(OLDKEY); } catch (_) {} }
+      useLocal(L2, id);
+    }
+  };
+}
+function space() {
+  stopTimer(); scrollTop();
+  const subj = m => { const qs = ALLQ.filter(q => q.m === m); return Math.round(qs.filter(q => S.seen[q.id] && S.seen[q.id].last).length / qs.length * 100); };
+  const answered = Object.values(S.seen).reduce((n, r) => n + r.ok + r.ko, 0);
+  const okAll = Object.values(S.seen).reduce((n, r) => n + r.ok, 0);
+  const days = (S.days || []).slice().sort();
+  let streak = 0; { let d = new Date(); for (;;) { const k = d.toISOString().slice(0, 10); if (days.includes(k)) { streak++; d.setDate(d.getDate() - 1); } else if (streak === 0 && k === today()) { d.setDate(d.getDate() - 1); } else break; } }
+  const chs = CHAPTERS.map(c => { let ok = 0, ko = 0; c.q.forEach(q => { const r = S.seen[q.id]; if (r) { ok += r.ok; ko += r.ko; } }); return { c, n: ok + ko, rate: ok + ko ? ok / (ok + ko) : 0, m: mastered(c) / c.q.length }; });
+  const weak = chs.filter(x => x.n >= 3).sort((a, b) => a.rate - b.rate).slice(0, 3);
+  const untouched = chs.filter(x => x.n === 0);
+  const ex = S.exams.slice(-10);
+  const W = 300, Hh = 110, pad = 18;
+  const pts = ex.map((e, k) => [pad + (ex.length > 1 ? k * (W - 2 * pad) / (ex.length - 1) : (W - 2 * pad) / 2), Hh - pad - e.note / 20 * (Hh - 2 * pad)]);
+  const chart = ex.length ? `<svg viewBox="0 0 ${W} ${Hh}" class="chart" role="img" aria-label="Évolution des notes d’examens blancs">
+      ${[0, 10, 20].map(v => { const y = Hh - pad - v / 20 * (Hh - 2 * pad); return `<line x1="${pad}" x2="${W - 4}" y1="${y}" y2="${y}" class="gl"/><text x="2" y="${y + 4}" class="gt">${v}</text>`; }).join('')}
+      ${pts.length > 1 ? `<polyline points="${pts.map(p => p.join(',')).join(' ')}" class="ln" fill="none"/>` : ''}
+      ${pts.map((p, k) => `<circle cx="${p[0]}" cy="${p[1]}" r="${k === pts.length - 1 ? 5 : 3.5}" class="dt"/>`).join('')}
+      <text x="${pts[pts.length - 1][0]}" y="${pts[pts.length - 1][1] - 9}" text-anchor="middle" class="vt">${ex[ex.length - 1].note}</text>
+    </svg>` : '<p class="hint">Passe ton premier examen blanc pour voir ta courbe de notes.</p>';
+  $app.innerHTML = top('Mon espace', home) + `
+    <div class="me"><span class="av big-av">${esc(USER.name.slice(0, 1).toUpperCase())}</span><div><b>${esc(USER.name)}</b><span>${USER.mode === 'cloud' ? esc(USER.school || USER.email || '') : 'Profil sur ce téléphone'}</span></div></div>
+    <div class="stats" style="margin-top:14px">
+      <div class="stat"><b>${streak}</b><span>jour${streak > 1 ? 's' : ''} de révision d’affilée</span></div>
+      <div class="stat"><b>${answered}</b><span>réponses données</span></div>
+      <div class="stat"><b>${answered ? Math.round(okAll / answered * 100) + '%' : '–'}</b><span>de bonnes réponses</span></div>
+    </div>
+    <div class="lbl">Maîtrise par matière</div>
+    <div class="subj"><span>Histoire</span><span class="bar wide"><i style="width:${subj('H')}%;background:var(--red)"></i></span><b>${subj('H')}%</b></div>
+    <div class="subj"><span>Géographie</span><span class="bar wide"><i style="width:${subj('G')}%"></i></span><b>${subj('G')}%</b></div>
+    <div class="lbl">Mes notes d’examens blancs</div>
+    <div class="box" style="margin-top:0">${chart}</div>
+    <div class="lbl">À travailler en priorité</div>
+    ${weak.length ? weak.map(x => `<button class="chap ${x.c.m}" data-c="${x.c.id}"><span class="n">${x.c.m === 'H' ? 'H' : 'G'}${chapNum(x.c)}</span><span class="ct">${esc(x.c.t)}</span><span class="meta"><span>${Math.round(x.rate * 100)} % de réussite</span></span></button>`).join('')
+      : `<p class="hint">Réponds à quelques quiz pour que l’appli repère tes points faibles.</p>`}
+    ${untouched.length ? `<p class="hint">${untouched.length} chapitre${untouched.length > 1 ? 's' : ''} pas encore commencé${untouched.length > 1 ? 's' : ''}.</p>` : ''}
+    <p class="hint" id="sync">${USER.mode === 'cloud' ? 'Progression enregistrée en ligne' : 'Ta progression est enregistrée sur ce téléphone, dans ton profil.'}</p>
+    <div class="nav"><button id="lo">${USER.mode === 'cloud' ? 'Me déconnecter' : 'Changer de profil'}</button><button id="rs">Remettre à zéro</button></div>
+    <div id="resetBox"></div>`;
+  bindBack(home);
+  $app.querySelectorAll('.chap').forEach(b => b.onclick = () => chapter(BY[b.dataset.c], 'fiche'));
+  document.getElementById('lo').onclick = logout;
+  document.getElementById('rs').onclick = () => {
+    document.getElementById('resetBox').innerHTML = `<div class="confirm">Effacer toute ta progression et tes notes ?<div class="nav"><button id="rNo">Annuler</button><button class="pri" id="rYes">Effacer</button></div></div>`;
+    document.getElementById('rNo').onclick = () => { document.getElementById('resetBox').innerHTML = ''; };
+    document.getElementById('rYes').onclick = () => { S = blank(); save(); space(); };
+  };
+}
 let tab = 'H';
 let timerId = 0;
 
@@ -852,7 +1075,7 @@ const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { c
 const pickN = (a, n) => shuffle(a).slice(0, n);
 const mastered = c => c.q.filter(q => S.seen[q.id] && S.seen[q.id].last).length;
 const toReview = () => ALLQ.filter(q => S.seen[q.id] && !S.seen[q.id].last);
-const record = (q, ok) => { const r = S.seen[q.id] || { ok: 0, ko: 0 }; ok ? r.ok++ : r.ko++; r.last = ok; S.seen[q.id] = r; };
+const record = (q, ok) => { const r = S.seen[q.id] || { ok: 0, ko: 0 }; ok ? r.ok++ : r.ko++; r.last = ok; S.seen[q.id] = r; S.days = S.days || []; const t = today(); if (!S.days.includes(t)) { S.days.push(t); S.days = S.days.slice(-120); } };
 const chapNum = c => CHAPTERS.filter(x => x.m === c.m).indexOf(c) + 1;
 function markDates(t) {
   const m = t.match(/^((?:Vers |Après |Avant )?[0-9][0-9 ]*(?:er)?(?: [a-zéû]+)?(?: [0-9]{4})?(?:[-–][0-9]{2,4})?(?: \([^)]*\))?) ?: /);
@@ -875,9 +1098,9 @@ function home() {
   const list = CHAPTERS.filter(c => c.m === tab);
   $app.innerHTML = `
   <div class="hero">
-    <div class="flag" aria-hidden="true"><i></i><i></i><i></i></div>
-    <h1>Réussir le <span>BEPC</span> Histoire-Géo</h1>
-    <p class="sub">Programme guinéen de 10e année : fiches de dates, quiz par chapitre, exercices d’association comme à l’examen, et examens blancs notés sur 20.</p>
+    <div class="hello"><div class="flag" aria-hidden="true"><i></i><i></i><i></i></div><button class="mebtn" id="me"><span class="av">${esc(USER.name.slice(0, 1).toUpperCase())}</span>Mon espace</button></div>
+    <h1>Bonjour ${esc(USER.name)}, <span>réussis</span> ton BEPC</h1>
+    <p class="sub">Histoire-géographie, programme guinéen de 10e année : fiches de dates, quiz par chapitre, exercices d’association comme à l’examen, et examens blancs notés sur 20.</p>
     <div class="stats">
       <div class="stat"><b>${done}/${total}</b><span>questions maîtrisées</span></div>
       <div class="stat"><b>${last ? last.note.toFixed(1).replace('.', ',') : '–'}</b><span>dernier examen /20</span></div>
@@ -898,17 +1121,13 @@ function home() {
       <span class="meta"><span>${c.q.length} questions · ${c.assoc.length} à relier</span><span class="bar"><i style="width:${p}%"></i></span><span>${p}%</span></span>
     </button>`; }).join('')}
   ${S.exams.length ? `<div class="lbl">Mes examens blancs</div><div class="hist">${S.exams.slice(-5).reverse().map(e => `<div><span>${esc(e.date)} · ${esc(e.label)}</span><b>${e.note.toFixed(1).replace('.', ',')}/20</b></div>`).join('')}</div>` : ''}
-  <p class="foot">Ta progression est enregistrée sur cet appareil. <button class="linkbtn" id="reset">Remettre à zéro</button></p>
-  <div id="resetBox"></div>`;
+  <p class="foot">${USER.mode === 'cloud' ? 'Ta progression est enregistrée dans ton compte.' : 'Ta progression est enregistrée dans ton profil, sur ce téléphone.'} <button class="linkbtn" id="toMe">Voir mon espace</button></p>`;
   $app.querySelectorAll('.seg button').forEach(b => b.onclick = () => { tab = b.dataset.t; home(); });
   $app.querySelectorAll('.chap').forEach(b => b.onclick = () => chapter(BY[b.dataset.c], 'fiche'));
   document.getElementById('goExam').onclick = examSetup;
   document.getElementById('goRev').onclick = () => quiz(shuffle(toReview()).slice(0, 15), 'À revoir', home);
-  document.getElementById('reset').onclick = () => {
-    document.getElementById('resetBox').innerHTML = `<div class="confirm">Effacer toute ta progression et tes notes ?<div class="nav"><button id="rNo">Annuler</button><button class="pri" id="rYes">Effacer</button></div></div>`;
-    document.getElementById('rNo').onclick = home;
-    document.getElementById('rYes').onclick = () => { S = { seen: {}, exams: [] }; save(); home(); };
-  };
+  document.getElementById('me').onclick = space;
+  document.getElementById('toMe').onclick = space;
 }
 
 /* ---------- Chapitre ---------- */
@@ -1150,7 +1369,7 @@ function exam(kind) {
   timerId = setInterval(tick, 1000);
 }
 
-home();
+boot();
 })();
 </script>
 
