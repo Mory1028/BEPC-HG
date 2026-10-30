@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="BEPC HG">
+<meta name="theme-color" content="#15213a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}</style>
+<title>BEPC Histoire-Géo Guinée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Chivo:wght@700;900&family=Chivo+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: une colonne type cahier (max 680px), en-tête collant avec retour, écrans empilés ; correction au stylo rouge/vert, dates surlignées au feutre jaune. */
+:root{
+  --paper:#f7f8fb; --sheet:#ffffff; --line:#e3e8f1; --ink:#15213a; --muted:#5d6a82;
+  --red:#cf3a2b; --green:#18855a; --yellow:#ffd94a; --mark:#fff0a8; --blue:#2453c7; --blue-soft:#e8eefc;
+  --display:"Chivo","Arial Narrow",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  --mono:"Chivo Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0e141f; --sheet:#161f2e; --line:#243146; --ink:#e9eef7; --muted:#9aa7bd;
+  --red:#ff6a58; --green:#3cc98a; --yellow:#ffd94a; --mark:#5a4a12; --blue:#7fa2ff; --blue-soft:#1c2a47; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e141f; --sheet:#161f2e; --line:#243146; --ink:#e9eef7; --muted:#9aa7bd;
+  --red:#ff6a58; --green:#3cc98a; --yellow:#ffd94a; --mark:#5a4a12; --blue:#7fa2ff; --blue-soft:#1c2a47; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{min-height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 32px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.wrap{max-width:680px;margin:0 auto;padding-block:0 40px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:2px solid var(--ink)}
+.back{background:none;border:0;padding:6px 8px 6px 0;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:4px}
+.top .tt{font-family:var(--display);font-weight:900;font-size:17px;line-height:1.15;flex:1;min-width:0;text-wrap:balance}
+.top .timer{font-family:var(--mono);font-weight:700;font-size:16px;padding:4px 8px;background:var(--ink);color:var(--paper);font-variant-numeric:tabular-nums}
+.top .timer.low{background:var(--red);color:#fff}
+
+/* home */
+.hero{padding:22px 0 18px;display:grid;gap:10px}
+.flag{display:flex;height:6px;width:84px}.flag i{flex:1}.flag i:nth-child(1){background:var(--red)}.flag i:nth-child(2){background:var(--yellow)}.flag i:nth-child(3){background:var(--green)}
+h1{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(34px,9vw,52px);line-height:.95;letter-spacing:-.02em;text-wrap:balance}
+h1 span{background:var(--yellow);color:#15213a;padding:0 .08em}
+.sub{margin:0;color:var(--muted);max-width:60ch}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--sheet);border:1.5px solid var(--line);padding:10px 12px}
+.stat b{display:block;font-family:var(--display);font-weight:900;font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+.seg{display:flex;border:2px solid var(--ink);margin:18px 0 12px}
+.seg button{flex:1;background:var(--sheet);border:0;padding:11px 6px;font-weight:700;font-size:16px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.cta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.big{display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;border:2px solid var(--ink);background:var(--sheet);padding:14px;min-height:96px}
+.big b{font-family:var(--display);font-weight:900;font-size:19px;line-height:1.1}
+.big span{font-size:14px;color:var(--muted)}
+.big.exam{background:var(--ink);color:var(--paper)}.big.exam span{color:color-mix(in srgb,var(--paper) 75%,transparent)}
+.big:disabled{opacity:.5;cursor:default}
+.lbl{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px}
+.chap{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;width:100%;text-align:left;background:var(--sheet);border:1.5px solid var(--line);border-left:5px solid var(--line);padding:12px 14px;margin-bottom:8px}
+.chap.H{border-left-color:var(--red)}.chap.G{border-left-color:var(--green)}
+.chap .n{font-family:var(--mono);font-weight:700;color:var(--muted);font-size:14px;padding-top:2px}
+.chap .ct{font-weight:700;line-height:1.25}
+.chap .meta{grid-column:2;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.bar{flex:1;height:6px;background:var(--line);max-width:160px}.bar i{display:block;height:100%;background:var(--green)}
+.hist{display:grid;gap:6px}
+.hist div{display:flex;justify-content:space-between;gap:10px;background:var(--sheet);border:1.5px solid var(--line);padding:8px 12px;font-size:15px}
+.hist b{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.foot{margin-top:28px;font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--blue);text-decoration:underline;padding:0;font-size:13px}
+
+/* chapter */
+.tabs{display:flex;gap:6px;margin:14px 0}
+.tabs button{flex:1;background:var(--sheet);border:1.5px solid var(--line);padding:10px 4px;font-weight:700;font-size:15px}
+.tabs button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.fiche{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.fiche li{background:var(--sheet);border:1.5px solid var(--line);padding:11px 14px;line-height:1.5}
+mark{background:var(--mark);color:var(--ink);font-family:var(--mono);font-weight:700;font-size:.92em;padding:0 3px}
+.start{width:100%;margin-top:14px;background:var(--blue);color:#fff;border:0;padding:15px;font-family:var(--display);font-weight:900;font-size:19px}
+.hint{color:var(--muted);font-size:15px;margin:6px 0 0}
+
+/* quiz */
+.qhead{display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;font-size:14px;color:var(--muted);gap:10px}
+.prog{flex:1;height:6px;background:var(--line);margin-left:12px;max-width:240px}.prog i{display:block;height:100%;background:var(--ink)}
+.tag{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1.5px solid currentColor}
+.tag.H{color:var(--red)}.tag.G{color:var(--green)}
+.qtext{font-family:var(--display);font-weight:700;font-size:clamp(20px,5.2vw,25px);line-height:1.25;margin:6px 0 16px;text-wrap:balance}
+.opts{display:grid;gap:9px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--sheet);border:2px solid var(--line);padding:13px 14px;font-size:17px;line-height:1.3}
+.opt .k{font-family:var(--mono);font-weight:700;color:var(--muted);flex:none;width:18px}
+.opt:not(:disabled):hover{border-color:var(--ink)}
+.opt.sel{border-color:var(--blue);background:var(--blue-soft)}
+.opt.ok{border-color:var(--green);background:color-mix(in srgb,var(--green) 14%,var(--sheet))}
+.opt.ko{border-color:var(--red);background:color-mix(in srgb,var(--red) 12%,var(--sheet));text-decoration:line-through;text-decoration-color:var(--red)}
+.opt:disabled{cursor:default}
+.fb{margin-top:14px;padding:12px 14px;border-left:5px solid;background:var(--sheet);font-size:16px}
+.fb.ok{border-color:var(--green)}.fb.ko{border-color:var(--red)}
+.fb b{display:block;margin-bottom:2px}
+.fb.ok b{color:var(--green)}.fb.ko b{color:var(--red)}
+.nav{display:flex;gap:8px;margin-top:16px}
+.nav button{flex:1;padding:14px;font-weight:700;border:2px solid var(--ink);background:var(--sheet)}
+.nav button.pri{background:var(--ink);color:var(--paper)}
+.nav button:disabled{opacity:.4;cursor:default}
+
+/* match */
+.mgrid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:8px;margin-top:12px}
+.mcol{display:grid;gap:8px;align-content:start}
+.mi{text-align:left;background:var(--sheet);border:2px solid var(--line);padding:11px 10px;font-size:15px;line-height:1.25;position:relative;min-height:52px}
+.mi.left{font-family:var(--mono);font-weight:700;font-size:14px}
+.mi.act{border-color:var(--blue);background:var(--blue-soft)}
+.mi.done{border-color:var(--green);background:color-mix(in srgb,var(--green) 12%,var(--sheet));cursor:default}
+.mi.bad{animation:shake .3s;border-color:var(--red)}
+.mi.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 10%,var(--sheet))}
+.mi .badge{position:absolute;top:-8px;right:-6px;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:12px;font-weight:700;min-width:22px;height:22px;display:grid;place-items:center;border-radius:11px}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* results */
+.score{display:flex;align-items:baseline;gap:10px;margin:18px 0 4px}
+.score b{font-family:var(--display);font-weight:900;font-size:72px;line-height:.9;font-variant-numeric:tabular-nums}
+.score span{font-family:var(--display);font-weight:700;font-size:26px;color:var(--muted)}
+.mention{display:inline-block;font-weight:700;padding:3px 10px;color:#fff;background:var(--green);margin-bottom:10px}
+.mention.low{background:var(--red)}
+.parts{display:grid;gap:6px;margin:12px 0}
+.parts div{display:flex;justify-content:space-between;background:var(--sheet);border:1.5px solid var(--line);padding:9px 12px}
+.parts b{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.corr{display:grid;gap:8px}
+.corr div{background:var(--sheet);border:1.5px solid var(--line);border-left:5px solid var(--red);padding:10px 12px;font-size:15px}
+.corr .you{color:var(--red);text-decoration:line-through}
+.corr .good{color:var(--green);font-weight:700}
+.corr p{margin:4px 0 0;color:var(--muted)}
+.pick{display:grid;gap:8px;margin-top:12px}
+.pick button{text-align:left;background:var(--sheet);border:2px solid var(--line);padding:14px}
+.pick button b{display:block;font-family:var(--display);font-size:19px}
+.pick button span{font-size:14px;color:var(--muted)}
+.pick button[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.box{background:var(--sheet);border:1.5px solid var(--line);padding:14px;margin-top:12px}
+.box ol{margin:6px 0 0;padding-left:20px}
+.confirm{margin-top:12px;padding:12px 14px;border:2px solid var(--red);background:var(--sheet)}
+.dots{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px}
+.dots button{width:30px;height:30px;border:1.5px solid var(--line);background:var(--sheet);font-family:var(--mono);font-size:12px;padding:0}
+.dots button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.dots button.cur{outline:2px solid var(--blue);outline-offset:1px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head><body>
+<div class="wrap" id="app"></div>
+
+<script>
+// Banque de questions BEPC Guinée – Histoire & Géographie (programme de 10e année)
+// Question : [énoncé, bonne réponse, [3 mauvaises réponses], explication]
+// assoc : paires à relier [gauche, droite] (dates ↔ événements, lieux ↔ caractéristiques)
+const CHAPTERS = [
+/* ===================== HISTOIRE ===================== */
+{ id:"h1", m:"H", t:"La révolution industrielle et les progrès du XIXe siècle",
+fiche:[
+"La révolution industrielle est le passage d’une économie agricole et artisanale à une économie industrielle, fondée sur les machines.",
+"Elle commence en Angleterre à la fin du XVIIIe siècle, puis gagne la France, la Belgique, l’Allemagne et les États-Unis.",
+"Ses moteurs : le charbon, le fer (puis l’acier), les capitaux des banques, la main-d’œuvre venue des campagnes (exode rural) et les inventions.",
+"1769 : James Watt perfectionne la machine à vapeur.",
+"1807 : Robert Fulton fait naviguer le premier bateau à vapeur.",
+"1825 : première ligne de chemin de fer, Stockton–Darlington (George Stephenson).",
+"1837 : Samuel Morse invente le télégraphe électrique.",
+"1869 : ouverture du canal de Suez ; Zénobe Gramme invente la dynamo (1869-1871).",
+"1876 : Graham Bell invente le téléphone. 1879 : Thomas Edison invente la lampe électrique.",
+"1885 : Louis Pasteur met au point le vaccin contre la rage.",
+"1886 : Carl Benz construit l’automobile à moteur à essence. 1903 : premier vol motorisé des frères Wright.",
+"Conséquences sociales : naissance de la bourgeoisie (les patrons) et du prolétariat (les ouvriers), travail des enfants, journées de 14 à 16 heures, logements insalubres.",
+"1848 : Karl Marx et Friedrich Engels publient le Manifeste du Parti communiste. 1864 : Première Internationale ouvrière à Londres.",
+"Les ouvriers s’organisent en syndicats et font grève pour obtenir de meilleures conditions de travail.",
+"Capitalisme : propriété privée des usines et recherche du profit. Socialisme : propriété collective des moyens de production.",
+"Unités nationales : l’Italie s’unifie en 1861 (Rome capitale en 1870) ; l’Empire allemand est proclamé le 18 janvier 1871 à Versailles (Bismarck)."
+],
+assoc:[["1769","Machine à vapeur de James Watt"],["1825","Premier chemin de fer (Stephenson)"],["1837","Télégraphe de Morse"],["1876","Téléphone de Graham Bell"],["1879","Lampe électrique d’Edison"],["1885","Vaccin contre la rage (Pasteur)"],["1848","Manifeste du Parti communiste"],["1903","Premier vol des frères Wright"],["1871","Proclamation de l’Empire allemand"],["1807","Bateau à vapeur de Fulton"]],
+q:[
+["Dans quel pays la révolution industrielle a-t-elle commencé ?","L’Angleterre",["La France","L’Allemagne","Les États-Unis"],"Elle débute en Angleterre à la fin du XVIIIe siècle grâce au charbon, au fer et aux capitaux."],
+["Qui a perfectionné la machine à vapeur en 1769 ?","James Watt",["George Stephenson","Robert Fulton","Thomas Edison"],"La machine à vapeur de Watt est le symbole de la première révolution industrielle."],
+["Quelle était la principale source d’énergie de la première révolution industrielle ?","Le charbon",["Le pétrole","L’électricité","Le gaz naturel"],"Le charbon alimente les machines à vapeur. Le pétrole et l’électricité marquent la seconde révolution industrielle."],
+["Qui a construit la locomotive de la première ligne de chemin de fer (1825) ?","George Stephenson",["James Watt","Samuel Morse","Carl Benz"],"La ligne Stockton–Darlington ouvre en Angleterre en 1825."],
+["Qui a inventé le télégraphe électrique en 1837 ?","Samuel Morse",["Graham Bell","Thomas Edison","Zénobe Gramme"],"Il a aussi créé l’alphabet morse."],
+["En quelle année Graham Bell a-t-il inventé le téléphone ?","1876",["1837","1869","1903"],null],
+["Qui a inventé la lampe électrique (ampoule) en 1879 ?","Thomas Edison",["Graham Bell","Louis Pasteur","Robert Fulton"],null],
+["Louis Pasteur est célèbre pour avoir mis au point en 1885…","le vaccin contre la rage",["la machine à vapeur","le téléphone","l’automobile"],"C’est un exemple de progrès scientifique au service de la santé."],
+["Qui a construit la première automobile à moteur à essence en 1886 ?","Carl Benz",["Henry Ford","James Watt","George Stephenson"],null],
+["En quelle année les frères Wright ont-ils réussi le premier vol motorisé ?","1903",["1886","1876","1914"],null],
+["Qui a fait naviguer le premier bateau à vapeur en 1807 ?","Robert Fulton",["James Watt","Samuel Morse","Ferdinand de Lesseps"],null],
+["Comment appelle-t-on la classe sociale des ouvriers de l’industrie au XIXe siècle ?","Le prolétariat",["La bourgeoisie","La noblesse","Le clergé"],"Les prolétaires ne possèdent que leur force de travail."],
+["Comment appelle-t-on la classe des patrons et propriétaires d’usines ?","La bourgeoisie",["Le prolétariat","La paysannerie","La noblesse"],null],
+["Qui sont les auteurs du Manifeste du Parti communiste (1848) ?","Karl Marx et Friedrich Engels",["Lénine et Staline","Proudhon et Fourier","Bismarck et Guillaume Ier"],null],
+["Quelle organisation les ouvriers créent-ils pour défendre leurs intérêts ?","Le syndicat",["La banque","La société anonyme","Le cartel"],null],
+["Le système économique fondé sur la propriété privée et la recherche du profit s’appelle…","le capitalisme",["le socialisme","le communisme","le féodalisme"],null],
+["Quelle était l’une des conséquences sociales de la révolution industrielle ?","Le travail des enfants dans les usines",["La fin de l’exode rural","La baisse de la population urbaine","La disparition des grèves"],null],
+["L’exode rural désigne…","le départ des paysans vers les villes",["le retour des citadins à la campagne","l’émigration vers l’Amérique","le déplacement des troupeaux"],null],
+["Où l’Empire allemand a-t-il été proclamé le 18 janvier 1871 ?","Au château de Versailles",["À Berlin","À Vienne","À Francfort"],"Bismarck réalise l’unité allemande après la victoire sur la France."],
+["Quel homme d’État a réalisé l’unité allemande ?","Otto von Bismarck",["Cavour","Napoléon III","Garibaldi"],"Cavour et Garibaldi sont les artisans de l’unité italienne."],
+["Le canal de Suez, inauguré en 1869, relie…","la mer Méditerranée et la mer Rouge",["l’océan Atlantique et l’océan Pacifique","la mer Noire et la Méditerranée","la mer Rouge et l’océan Indien"],"Il raccourcit énormément la route entre l’Europe et l’Asie."],
+["Quelle invention de Zénobe Gramme (1869) permet de produire du courant électrique ?","La dynamo",["Le télégraphe","La turbine à vapeur","Le moteur diesel"],null]
+]},
+
+{ id:"h2", m:"H", t:"L’impérialisme et les rivalités coloniales en Asie et en Afrique",
+fiche:[
+"L’impérialisme est la volonté d’un État puissant d’étendre sa domination politique, économique et culturelle sur d’autres peuples.",
+"Causes économiques : besoin de matières premières, de débouchés pour les produits industriels et de placements pour les capitaux.",
+"Causes politiques : recherche de prestige et de puissance ; causes démographiques : surplus de population en Europe ; causes idéologiques : la prétendue « mission civilisatrice » et l’évangélisation.",
+"Explorateurs : Mungo Park (Niger, 1796), René Caillié (premier Européen revenu de Tombouctou, 1828), David Livingstone et Henry Stanley (Afrique centrale, rencontre en 1871).",
+"Conférence de Berlin (15 novembre 1884 – 26 février 1885), réunie par Bismarck : elle fixe les règles du partage de l’Afrique (occupation effective, notification aux autres puissances).",
+"Rivalités : crise de Fachoda (1898) entre la France (Marchand) et l’Angleterre (Kitchener) ; guerre des Boers en Afrique du Sud (1899-1902) ; crises marocaines (1905 et 1911).",
+"Résistance victorieuse : bataille d’Adoua (1er mars 1896), l’Éthiopie de Ménélik II bat l’Italie. L’Éthiopie et le Liberia restent les seuls États africains non colonisés.",
+"Asie : guerre de l’opium (1839-1842) et traité de Nankin (1842) qui donne Hong Kong aux Britanniques ; révolte des Cipayes en Inde (1857) ; la reine Victoria impératrice des Indes (1877) ; Indochine française (1887).",
+"Japon : l’ère Meiji (1868) modernise le pays, qui devient lui-même impérialiste et bat la Russie en 1905.",
+"Systèmes coloniaux : administration directe et assimilation (France) ; administration indirecte ou indirect rule (Angleterre, par les chefs locaux).",
+"Afrique-Occidentale française (AOF) créée le 16 juin 1895, capitale Saint-Louis puis Dakar (1902). Afrique-Équatoriale française (AEF) en 1910, capitale Brazzaville.",
+"Exploitation coloniale : travail forcé, impôt de capitation, cultures obligatoires, code de l’indigénat (1887)."
+],
+assoc:[["1884-1885","Conférence de Berlin"],["1898","Crise de Fachoda"],["1896","Bataille d’Adoua"],["1842","Traité de Nankin"],["1857","Révolte des Cipayes"],["1868","Début de l’ère Meiji"],["1895","Création de l’AOF"],["1910","Création de l’AEF"],["1828","René Caillié à Tombouctou"],["1899-1902","Guerre des Boers"]],
+q:[
+["Qui a convoqué la conférence de Berlin (1884-1885) ?","Otto von Bismarck",["Jules Ferry","La reine Victoria","Léopold II"],null],
+["Quel était le but principal de la conférence de Berlin ?","Fixer les règles du partage de l’Afrique",["Abolir l’esclavage en Afrique","Créer la Société des Nations","Mettre fin à la guerre des Boers"],null],
+["Selon la conférence de Berlin, pour posséder un territoire, une puissance devait…","l’occuper effectivement",["l’acheter aux chefs locaux","le découvrir la première","obtenir l’accord du pape"],"C’est le principe de l’occupation effective, qui accélère la course aux colonies."],
+["Quel souverain a obtenu l’État indépendant du Congo à la conférence de Berlin ?","Léopold II de Belgique",["Guillaume II","Napoléon III","Victoria"],null],
+["La crise de Fachoda (1898) a opposé…","la France et l’Angleterre",["la France et l’Allemagne","l’Angleterre et le Portugal","l’Italie et l’Éthiopie"],"Le commandant Marchand dut céder la place à Kitchener au Soudan."],
+["Quel pays africain a battu l’Italie à Adoua en 1896 ?","L’Éthiopie",["Le Soudan","La Libye","La Somalie"],"L’empereur Ménélik II remporte cette victoire le 1er mars 1896."],
+["Quels sont les deux pays africains qui n’ont pas été colonisés ?","L’Éthiopie et le Liberia",["Le Maroc et l’Égypte","Le Ghana et la Guinée","Le Soudan et le Tchad"],null],
+["La guerre des Boers (1899-1902) a eu lieu…","en Afrique du Sud",["au Soudan","au Maroc","en Égypte"],"Elle oppose les Britanniques aux colons d’origine hollandaise (Boers)."],
+["Quel explorateur français fut le premier Européen à revenir vivant de Tombouctou (1828) ?","René Caillié",["Mungo Park","Savorgnan de Brazza","Henry Stanley"],null],
+["Quelle guerre a permis aux Britanniques d’obtenir Hong Kong en 1842 ?","La guerre de l’opium",["La guerre des Boxers","La guerre russo-japonaise","La révolte des Cipayes"],"Le traité de Nankin (1842) cède Hong Kong au Royaume-Uni."],
+["En quelle année la révolte des Cipayes a-t-elle éclaté en Inde ?","1857",["1842","1877","1905"],null],
+["Quel pays d’Asie s’est modernisé pendant l’ère Meiji (1868) et est devenu impérialiste ?","Le Japon",["La Chine","L’Inde","La Corée"],"Il bat la Russie en 1905."],
+["L’administration indirecte (indirect rule), qui s’appuie sur les chefs locaux, était pratiquée par…","l’Angleterre",["la France","le Portugal","la Belgique"],"La France pratiquait plutôt l’administration directe et l’assimilation."],
+["Quand l’Afrique-Occidentale française (AOF) a-t-elle été créée ?","1895",["1885","1910","1904"],"Créée le 16 juin 1895, elle regroupe notamment le Sénégal, le Soudan français et la Guinée."],
+["Quelle ville est devenue la capitale de l’AOF en 1902 ?","Dakar",["Saint-Louis","Conakry","Bamako"],"Avant 1902, c’était Saint-Louis du Sénégal."],
+["Quelle était la capitale de l’Afrique-Équatoriale française (AEF) ?","Brazzaville",["Libreville","Léopoldville","Douala"],null],
+["Comment s’appelle l’impôt par tête imposé aux colonisés ?","L’impôt de capitation",["La dîme","La gabelle","La taxe foncière"],null],
+["Le code de l’indigénat (1887) était…","un ensemble de sanctions sans jugement imposées aux colonisés",["une loi accordant la citoyenneté française","un traité de paix avec les chefs africains","un programme scolaire"],null],
+["Parmi ces raisons, laquelle est une cause économique de l’impérialisme ?","La recherche de matières premières",["La propagation du christianisme","Le prestige national","La curiosité scientifique"],null],
+["La « mission civilisatrice » invoquée par les colonisateurs est une justification…","idéologique",["économique","démographique","militaire"],null],
+["Qui aurait dit « Docteur Livingstone, je présume ? » en 1871 ?","Henry Morton Stanley",["René Caillié","Mungo Park","Pierre Savorgnan de Brazza"],null]
+]},
+
+{ id:"h3", m:"H", t:"L’Afrique et la Guinée à la veille de la conquête coloniale",
+fiche:[
+"Avant la colonisation, l’Afrique est organisée en empires, royaumes, chefferies et États théocratiques musulmans.",
+"La société est hiérarchisée : hommes libres (nobles), gens de caste (forgerons, griots, cordonniers…) et captifs.",
+"L’économie repose sur l’agriculture, l’élevage, l’artisanat et le commerce (caravanes, échanges avec les comptoirs européens de la côte).",
+"La traite négrière atlantique a affaibli le continent. Abolitions : Angleterre (traite) en 1807 ; France (esclavage) le 27 avril 1848 grâce à Victor Schœlcher.",
+"Fouta-Djalon : État théocratique peul fondé vers 1725 après le djihad de Karamoko Alfa. Capitale politique : Timbo ; capitale religieuse : Fougoumba.",
+"Le Fouta-Djalon est divisé en 9 provinces (diwé) ; le pouvoir de l’almamy alterne entre deux familles, les Alfaya et les Soriya.",
+"El Hadj Omar Tall s’installe à Dinguiraye (vers 1849) et y prépare le djihad qui fonde l’empire toucouleur.",
+"Samory Touré fonde l’empire du Wassoulou (Haute-Guinée) ; capitale Bissandougou.",
+"En Basse-Guinée (côte) : royaumes nalou, landouma, baga, soussou… ; contacts anciens avec les commerçants européens (Rivières du Sud).",
+"La France installe un poste militaire à Boké en 1866, sur le Rio Nunez."
+],
+assoc:[["Vers 1725","Fondation de l’État théocratique du Fouta-Djalon"],["1848","Abolition de l’esclavage par la France"],["1807","Abolition de la traite par l’Angleterre"],["1866","Poste français de Boké"],["Vers 1849","El Hadj Omar à Dinguiraye"]],
+q:[
+["Quelle était la capitale politique du Fouta-Djalon théocratique ?","Timbo",["Fougoumba","Labé","Dalaba"],"Fougoumba était la capitale religieuse, où l’on intronisait l’almamy."],
+["Quelle était la capitale religieuse du Fouta-Djalon ?","Fougoumba",["Timbo","Mamou","Pita"],null],
+["Vers quelle date l’État théocratique du Fouta-Djalon a-t-il été fondé ?","Vers 1725",["Vers 1600","Vers 1830","Vers 1880"],null],
+["Qui a dirigé le djihad à l’origine de l’État du Fouta-Djalon ?","Karamoko Alfa",["El Hadj Omar Tall","Samory Touré","Alfa Yaya Diallo"],null],
+["En combien de provinces (diwé) le Fouta-Djalon était-il divisé ?","9",["5","7","12"],null],
+["Entre quelles deux familles le pouvoir de l’almamy du Fouta alternait-il ?","Les Alfaya et les Soriya",["Les Cissé et les Bérété","Les Keïta et les Camara","Les Barry et les Touré"],null],
+["Dans quelle ville guinéenne El Hadj Omar Tall a-t-il préparé son djihad ?","Dinguiraye",["Kankan","Timbo","Siguiri"],null],
+["Quelle était la capitale de l’empire de Samory Touré ?","Bissandougou",["Kankan","Sikasso","Kouroussa"],null],
+["Dans la société africaine traditionnelle, les forgerons et les griots faisaient partie…","des gens de caste",["des nobles","des captifs","des marabouts"],null],
+["Quand la France a-t-elle aboli l’esclavage ?","1848",["1789","1807","1885"],"Le décret du 27 avril 1848 est l’œuvre de Victor Schœlcher."],
+["Qui a fait abolir l’esclavage dans les colonies françaises en 1848 ?","Victor Schœlcher",["Jules Ferry","Louis Faidherbe","Félix Éboué"],null],
+["En quelle année la France installe-t-elle un poste militaire à Boké ?","1866",["1849","1882","1891"],null],
+["Sur quel cours d’eau se trouve Boké ?","Le Rio Nunez",["Le Rio Pongo","La Fatala","Le Konkouré"],null],
+["Comment appelait-on la côte guinéenne au XIXe siècle ?","Les Rivières du Sud",["La Côte de l’Or","La Côte des Esclaves","La Côte des Graines"],null],
+["Le royaume nalou se trouvait…","en Basse-Guinée",["en Moyenne-Guinée","en Haute-Guinée","en Guinée forestière"],null],
+["Quel était le principal système politique au Fouta-Djalon avant la colonisation ?","Un État théocratique musulman",["Une république","Un empire colonial","Une monarchie chrétienne"],"Le chef, l’almamy, était à la fois chef politique et religieux."]
+]},
+
+{ id:"h4", m:"H", t:"La conquête coloniale et les résistances en Guinée",
+fiche:[
+"Samory Touré naît vers 1830 à Manyambaladougou (région de Kérouané, Haute-Guinée). Il prend le titre d’almamy et fonde l’empire du Wassoulou, capitale Bissandougou.",
+"Il crée une armée permanente de sofas, fabrique des armes et achète des fusils en Sierra Leone.",
+"1882 : bataille de Woyowayanko, près de Bamako, contre la colonne de Borgnis-Desbordes.",
+"28 mars 1886 : traité de Kéniéba-Koura ; Samory cède la rive gauche du Niger. 1887 : traité de Bissandougou (protectorat).",
+"1887-1888 : il échoue au siège de Sikasso (royaume de Tiéba). 1891 : le colonel Archinard prend Kankan et Bissandougou.",
+"Samory pratique la tactique de la terre brûlée et déplace son empire vers l’est (Kong, Dabakala, actuelle Côte d’Ivoire).",
+"29 septembre 1898 : il est capturé à Guélémou par le capitaine Gouraud. Exilé à Ndjolé (Gabon), il y meurt le 2 juin 1900.",
+"Fouta-Djalon : protectorat français en 1881. L’almamy Bokar Biro Barry est vaincu et tué à la bataille de Porédaka (novembre 1896).",
+"Alfa Yaya Diallo, roi du Labé, est arrêté en 1905 et déporté au Dahomey ; arrêté de nouveau en 1911, il meurt en exil à Port-Étienne (Mauritanie) en 1912.",
+"Tierno Aliou, le Wali de Goumba, mène une résistance religieuse en 1911.",
+"Basse-Côte : Dinah Salifou Camara, roi des Nalou, est arrêté en 1890, déporté à Saint-Louis du Sénégal, où il meurt en 1897.",
+"Guinée forestière : résistance longue et dispersée (Kissi Kaba Keïta, Nzébéla Togba Pivi…) ; la région n’est soumise qu’au début du XXe siècle.",
+"Organisation : colonie des Rivières du Sud (1882) ; Conakry chef-lieu (1890) ; nom de « Guinée française » (1891), premier gouverneur Noël Ballay ; intégration à l’AOF (1895).",
+"Chemin de fer Conakry–Niger (jusqu’à Kankan) construit de 1900 à 1914.",
+"Causes de l’échec des résistances : supériorité de l’armement européen, divisions entre Africains (« diviser pour régner »), trahisons."
+],
+assoc:[["1882","Bataille de Woyowayanko"],["1886","Traité de Kéniéba-Koura"],["1890","Arrestation de Dinah Salifou"],["1896","Bataille de Porédaka"],["1897","Mort de Dinah Salifou"],["1898","Capture de Samory à Guélémou"],["1900","Mort de Samory au Gabon"],["1891","Prise de Kankan par Archinard"],["1912","Mort d’Alfa Yaya en exil"],["1881","Protectorat français sur le Fouta-Djalon"],["1891","Création de la Guinée française"],["1887","Traité de Bissandougou"]],
+q:[
+["Où est né Samory Touré ?","À Manyambaladougou (Haute-Guinée)",["À Kankan","À Bissandougou","À Siguiri"],"Il naît vers 1830 dans l’actuelle préfecture de Kérouané."],
+["Quel titre Samory Touré a-t-il pris ?","Almamy",["Mansa","Askia","Fama"],"L’almamy est à la fois chef politique et religieux."],
+["Comment s’appelaient les soldats de Samory ?","Les sofas",["Les tirailleurs","Les spahis","Les tondjons"],null],
+["En quelle année a eu lieu la bataille de Woyowayanko ?","1882",["1886","1891","1898"],"Près de Bamako, contre la colonne de Borgnis-Desbordes."],
+["Par quel traité de 1886 Samory cède-t-il la rive gauche du Niger aux Français ?","Le traité de Kéniéba-Koura",["Le traité de Bissandougou","Le traité de Berlin","Le traité de Timbo"],null],
+["Quel officier français a pris Kankan en 1891 ?","Le colonel Archinard",["Le capitaine Gouraud","Le général Faidherbe","Le commandant Marchand"],null],
+["Quelle tactique Samory utilise-t-il en se retirant devant les Français ?","La terre brûlée",["La guérilla urbaine","Le blocus maritime","La guerre de tranchées"],null],
+["Quelle ville Samory a-t-il assiégée sans succès en 1887-1888 ?","Sikasso",["Ségou","Kong","Bamako"],null],
+["Où Samory Touré a-t-il été capturé en 1898 ?","À Guélémou",["À Bissandougou","À Kankan","À Sikasso"],"Guélémou se trouve dans l’actuelle Côte d’Ivoire."],
+["Qui a capturé Samory Touré ?","Le capitaine Gouraud",["Le colonel Archinard","Le commandant Marchand","Noël Ballay"],null],
+["Dans quel pays Samory a-t-il été exilé ?","Au Gabon",["Au Sénégal","En Mauritanie","Au Dahomey"],"Il meurt à Ndjolé le 2 juin 1900."],
+["En quelle année Samory Touré est-il mort ?","1900",["1898","1905","1912"],null],
+["Combien d’années a duré la résistance de Samory contre les Français ?","Environ 17 ans",["5 ans","30 ans","50 ans"],"De 1881 à 1898."],
+["Quel almamy du Fouta-Djalon a été tué à la bataille de Porédaka ?","Bokar Biro Barry",["Alfa Yaya Diallo","Oumar Bademba","Karamoko Alfa"],null],
+["En quelle année a eu lieu la bataille de Porédaka ?","1896",["1882","1890","1905"],null],
+["Alfa Yaya Diallo était le roi…","du Labé",["de Timbo","du Wassoulou","des Nalou"],null],
+["Où Alfa Yaya Diallo est-il mort en exil en 1912 ?","À Port-Étienne (Mauritanie)",["À Ndjolé (Gabon)","À Saint-Louis (Sénégal)","À Abomey (Dahomey)"],null],
+["Dinah Salifou Camara était le roi…","des Nalou",["des Baga","du Labé","des Kissi"],null],
+["En quelle année Dinah Salifou a-t-il été arrêté ?","1890",["1882","1896","1900"],null],
+["Où Dinah Salifou a-t-il été déporté ?","À Saint-Louis du Sénégal",["Au Gabon","En Martinique","À Port-Étienne"],"Il y meurt en 1897."],
+["Qui a mené la résistance religieuse de Goumba en 1911 ?","Tierno Aliou (le Wali de Goumba)",["Bokar Biro","Alfa Yaya","Dinah Salifou"],null],
+["Lequel de ces résistants a combattu en Guinée forestière ?","Nzébéla Togba Pivi",["Dinah Salifou","Bokar Biro","Alfa Yaya"],null],
+["En quelle année le nom « Guinée française » a-t-il été adopté ?","1891",["1882","1895","1904"],null],
+["Qui fut le premier gouverneur de la Guinée française ?","Noël Ballay",["Louis Faidherbe","Gustave Borgnis-Desbordes","Joseph Gallieni"],null],
+["En quelle année Conakry devient-elle le chef-lieu de la colonie ?","1890",["1866","1900","1958"],null],
+["Le chemin de fer Conakry–Niger reliait Conakry à…","Kankan",["Labé","Nzérékoré","Boké"],"Il est construit de 1900 à 1914."],
+["Quelle politique a facilité la conquête coloniale en opposant les chefs africains entre eux ?","Diviser pour régner",["L’assimilation","Le protectorat","La politique d’association"],null],
+["Dans quelle préfecture actuelle se trouve Bissandougou, ancienne capitale de Samory ?","Kankan",["Faranah","Kissidougou","Siguiri"],null]
+]},
+
+{ id:"h5", m:"H", t:"La Première Guerre mondiale et la révolution russe",
+fiche:[
+"Causes profondes : rivalités économiques et coloniales, nationalismes, course aux armements.",
+"Deux blocs : la Triple Entente (France, Royaume-Uni, Russie) contre la Triple Alliance (Allemagne, Autriche-Hongrie, Italie).",
+"Cause immédiate : assassinat de l’archiduc François-Ferdinand d’Autriche à Sarajevo le 28 juin 1914.",
+"Août 1914 : début de la guerre. Guerre de mouvement, puis guerre de tranchées (guerre de position) à partir de fin 1914.",
+"1916 : batailles de Verdun et de la Somme, très meurtrières.",
+"1917 : entrée en guerre des États-Unis (6 avril) ; la Russie, en révolution, se retire (traité de Brest-Litovsk, mars 1918).",
+"11 novembre 1918 : armistice signé à Rethondes. Bilan : environ 10 millions de morts.",
+"Traité de Versailles (28 juin 1919) : l’Allemagne est jugée responsable, perd ses colonies et doit payer des réparations.",
+"Société des Nations (SDN) créée en 1919, siège à Genève, sur proposition du président américain Wilson.",
+"Afrique : environ 200 000 soldats d’AOF mobilisés (tirailleurs sénégalais) ; Blaise Diagne chargé du recrutement en 1918 ; les colonies allemandes (Togo, Cameroun…) deviennent des mandats.",
+"Révolution russe : février 1917, chute du tsar Nicolas II ; octobre 1917, les bolcheviks de Lénine prennent le pouvoir.",
+"L’URSS est créée le 30 décembre 1922. Après la mort de Lénine (1924), Staline prend le pouvoir.",
+"Crise de 1929 : krach boursier de Wall Street le jeudi 24 octobre 1929 (« jeudi noir »), puis crise mondiale."
+],
+assoc:[["28 juin 1914","Attentat de Sarajevo"],["1916","Bataille de Verdun"],["6 avril 1917","Entrée en guerre des États-Unis"],["Octobre 1917","Prise du pouvoir par Lénine"],["11 novembre 1918","Armistice de Rethondes"],["28 juin 1919","Traité de Versailles"],["1922","Création de l’URSS"],["24 octobre 1929","Jeudi noir à Wall Street"]],
+q:[
+["Quel événement a déclenché la Première Guerre mondiale ?","L’assassinat de l’archiduc François-Ferdinand à Sarajevo",["L’invasion de la Pologne","L’attaque de Pearl Harbor","La crise de Fachoda"],"Le 28 juin 1914."],
+["Quels pays formaient la Triple Entente ?","France, Royaume-Uni, Russie",["Allemagne, Autriche-Hongrie, Italie","France, États-Unis, Japon","Royaume-Uni, Italie, Turquie"],null],
+["Quels pays formaient la Triple Alliance ?","Allemagne, Autriche-Hongrie, Italie",["France, Royaume-Uni, Russie","Allemagne, Japon, Italie","Autriche-Hongrie, Russie, Serbie"],null],
+["Quelles sont les dates de la Première Guerre mondiale ?","1914-1918",["1939-1945","1870-1871","1905-1911"],null],
+["Quelle bataille de 1916 est restée le symbole de l’enfer des tranchées en France ?","Verdun",["La Marne","Stalingrad","Waterloo"],null],
+["En quelle année les États-Unis sont-ils entrés en guerre ?","1917",["1914","1916","1918"],null],
+["Quand l’armistice de la Première Guerre mondiale a-t-il été signé ?","Le 11 novembre 1918",["Le 8 mai 1945","Le 28 juin 1919","Le 6 avril 1917"],null],
+["Quel traité a mis fin à la guerre avec l’Allemagne en 1919 ?","Le traité de Versailles",["Le traité de Brest-Litovsk","Le traité de Berlin","Le traité de Paris"],null],
+["Quelle organisation internationale a été créée en 1919 pour maintenir la paix ?","La Société des Nations (SDN)",["L’ONU","L’OTAN","L’OUA"],"L’ONU la remplacera en 1945."],
+["Où siégeait la Société des Nations ?","À Genève",["À New York","À Paris","À Londres"],null],
+["Comment appelait-on les soldats africains de l’armée française ?","Les tirailleurs sénégalais",["Les sofas","Les spahis marocains","Les askaris"],"Ils venaient de toute l’AOF, y compris de Guinée."],
+["Quel député sénégalais a dirigé le recrutement des soldats africains en 1918 ?","Blaise Diagne",["Lamine Guèye","Léopold Sédar Senghor","Galandou Diouf"],null],
+["Que deviennent les colonies allemandes d’Afrique après la guerre ?","Des mandats de la SDN",["Des États indépendants","Des colonies italiennes","Des territoires américains"],null],
+["Quel tsar a été renversé en février 1917 ?","Nicolas II",["Alexandre II","Pierre le Grand","Ivan IV"],null],
+["Qui a dirigé la révolution bolchevique d’octobre 1917 ?","Lénine",["Staline","Trotski","Nicolas II"],null],
+["En quelle année l’URSS a-t-elle été créée ?","1922",["1917","1924","1945"],null],
+["Qui a dirigé l’URSS après la mort de Lénine ?","Staline",["Khrouchtchev","Trotski","Gorbatchev"],null],
+["Le « jeudi noir » du 24 octobre 1929 est…","le krach de la bourse de New York",["le début de la Première Guerre mondiale","la révolution russe","la création de la SDN"],null],
+["Comment appelle-t-on la guerre où les soldats restent enterrés face à face ?","La guerre de tranchées",["La guerre éclair","La guérilla","La guerre froide"],null],
+["Par quel traité la Russie bolchevique s’est-elle retirée de la guerre en 1918 ?","Le traité de Brest-Litovsk",["Le traité de Versailles","Le traité de Saint-Germain","Le traité de Sèvres"],null]
+]},
+
+{ id:"h6", m:"H", t:"La Seconde Guerre mondiale et ses conséquences",
+fiche:[
+"Causes : la crise de 1929, la montée des régimes totalitaires (nazisme d’Hitler en Allemagne, fascisme de Mussolini en Italie), l’humiliation du traité de Versailles.",
+"1er septembre 1939 : l’Allemagne envahit la Pologne ; le 3 septembre, la France et le Royaume-Uni lui déclarent la guerre.",
+"Juin 1940 : défaite de la France. Le 18 juin 1940, le général de Gaulle lance depuis Londres l’appel à la résistance.",
+"7 décembre 1941 : le Japon attaque la base américaine de Pearl Harbor ; les États-Unis entrent en guerre.",
+"Février 1943 : victoire soviétique à Stalingrad, tournant de la guerre. 6 juin 1944 : débarquement allié en Normandie.",
+"8 mai 1945 : capitulation de l’Allemagne. 6 et 9 août 1945 : bombes atomiques sur Hiroshima et Nagasaki. 2 septembre 1945 : capitulation du Japon.",
+"Bilan : plus de 50 millions de morts, génocide des Juifs (Shoah).",
+"Charte de l’Atlantique (14 août 1941) : elle affirme le droit des peuples à disposer d’eux-mêmes.",
+"Conférence de Brazzaville (30 janvier – 8 février 1944) : la France promet des réformes dans ses colonies, sans parler d’indépendance.",
+"Les Africains participent à la guerre (tirailleurs) ; massacre de Thiaroye (Sénégal) le 1er décembre 1944.",
+"ONU : charte signée à San Francisco le 26 juin 1945, entrée en vigueur le 24 octobre 1945 ; siège à New York.",
+"Après 1945 : guerre froide entre le bloc américain (OTAN, 1949) et le bloc soviétique (pacte de Varsovie, 1955)."
+],
+assoc:[["1er septembre 1939","Invasion de la Pologne"],["18 juin 1940","Appel du général de Gaulle"],["7 décembre 1941","Attaque de Pearl Harbor"],["1944","Conférence de Brazzaville"],["6 juin 1944","Débarquement en Normandie"],["8 mai 1945","Capitulation de l’Allemagne"],["6 août 1945","Bombe atomique sur Hiroshima"],["24 octobre 1945","Naissance de l’ONU"],["14 août 1941","Charte de l’Atlantique"]],
+q:[
+["Quel événement marque le début de la Seconde Guerre mondiale ?","L’invasion de la Pologne par l’Allemagne",["L’attentat de Sarajevo","L’attaque de Pearl Harbor","La crise de 1929"],"Le 1er septembre 1939."],
+["Quelles sont les dates de la Seconde Guerre mondiale ?","1939-1945",["1914-1918","1936-1942","1940-1948"],null],
+["Qui dirigeait l’Allemagne nazie ?","Adolf Hitler",["Benito Mussolini","Joseph Staline","Guillaume II"],null],
+["Qui a lancé l’appel du 18 juin 1940 depuis Londres ?","Le général de Gaulle",["Le maréchal Pétain","Winston Churchill","Félix Éboué"],null],
+["Quelle attaque japonaise a fait entrer les États-Unis dans la guerre ?","Pearl Harbor",["Hiroshima","Midway","Stalingrad"],"Le 7 décembre 1941."],
+["Quelle bataille de 1942-1943 marque le tournant de la guerre en faveur des Soviétiques ?","Stalingrad",["Verdun","El-Alamein","Dunkerque"],null],
+["À quelle date a eu lieu le débarquement allié en Normandie ?","Le 6 juin 1944",["Le 8 mai 1945","Le 18 juin 1940","Le 11 novembre 1918"],null],
+["Quand l’Allemagne a-t-elle capitulé ?","Le 8 mai 1945",["Le 2 septembre 1945","Le 6 juin 1944","Le 11 novembre 1918"],null],
+["Sur quelles villes les États-Unis ont-ils lancé les bombes atomiques en août 1945 ?","Hiroshima et Nagasaki",["Tokyo et Osaka","Berlin et Dresde","Pearl Harbor et Midway"],null],
+["Quel texte de 1941 affirme le droit des peuples à disposer d’eux-mêmes ?","La Charte de l’Atlantique",["Le traité de Versailles","La Déclaration de Bandung","La loi-cadre Defferre"],null],
+["En quelle année s’est tenue la conférence de Brazzaville ?","1944",["1940","1946","1956"],null],
+["Que promettait la France à la conférence de Brazzaville ?","Des réformes dans les colonies, mais pas l’indépendance",["L’indépendance immédiate","La fin de la guerre","La création de l’AOF"],null],
+["Où a eu lieu le massacre de tirailleurs africains le 1er décembre 1944 ?","À Thiaroye (Sénégal)",["À Conakry","À Dakar-Plateau","À Brazzaville"],null],
+["Quelle organisation a remplacé la SDN en 1945 ?","L’ONU",["L’OTAN","L’OUA","L’Union européenne"],null],
+["Où se trouve le siège de l’ONU ?","À New York",["À Genève","À Paris","À Washington"],null],
+["Où a été signée la charte des Nations unies le 26 juin 1945 ?","À San Francisco",["À New York","À Yalta","À Londres"],null],
+["Qui dirigeait l’Italie fasciste ?","Benito Mussolini",["Adolf Hitler","Francisco Franco","Victor-Emmanuel III"],null],
+["L’OTAN, créée en 1949, regroupe…","les États-Unis et leurs alliés occidentaux",["l’URSS et ses alliés","les pays non alignés","les pays africains"],null],
+["Comment appelle-t-on l’affrontement indirect entre les États-Unis et l’URSS après 1945 ?","La guerre froide",["La guerre éclair","La Grande Guerre","La guerre de position"],null]
+]},
+
+{ id:"h7", m:"H", t:"La décolonisation en Asie et en Afrique",
+fiche:[
+"La décolonisation est le processus par lequel les colonies accèdent à l’indépendance.",
+"Causes : affaiblissement des métropoles après 1945, Charte de l’Atlantique et ONU, anticolonialisme des États-Unis et de l’URSS, rôle des élites instruites et des partis nationalistes.",
+"Asie : Inde et Pakistan indépendants le 15 août 1947 (Gandhi et la non-violence, Nehru) ; Indonésie (Sukarno, 1945-1949).",
+"Indochine : défaite française à Dien Bien Phu (7 mai 1954), accords de Genève (juillet 1954).",
+"Conférence de Bandung (18-24 avril 1955) : 29 pays d’Asie et d’Afrique condamnent le colonialisme ; naissance du mouvement des non-alignés.",
+"Afrique du Nord : Libye (1951), Maroc et Tunisie (1956). Algérie : guerre de 1954 à 1962 (FLN), accords d’Évian (18 mars 1962), indépendance le 5 juillet 1962.",
+"Afrique noire : le Ghana de Kwame Nkrumah est le premier pays d’Afrique subsaharienne indépendant (6 mars 1957) ; la Guinée suit le 2 octobre 1958.",
+"1960 est « l’année de l’Afrique » : 17 pays africains deviennent indépendants (dont le Sénégal, le Mali, la Côte d’Ivoire).",
+"Afrique française : loi Lamine Guèye (1946) ; création du RDA à Bamako (octobre 1946), présidé par Félix Houphouët-Boigny ; loi-cadre Defferre (23 juin 1956) ; référendum sur la Communauté (28 septembre 1958).",
+"Colonies portugaises : lutte armée ; Guinée-Bissau (1973-1974, Amilcar Cabral et le PAIGC), Mozambique et Angola (1975).",
+"Afrique australe : Zimbabwe (1980), Namibie (21 mars 1990). Fin de l’apartheid en Afrique du Sud : Nelson Mandela libéré en 1990, élu président en 1994.",
+"OUA créée le 25 mai 1963 à Addis-Abeba ; remplacée par l’Union africaine (UA) le 9 juillet 2002."
+],
+assoc:[["15 août 1947","Indépendance de l’Inde"],["7 mai 1954","Défaite de Dien Bien Phu"],["1955","Conférence de Bandung"],["6 mars 1957","Indépendance du Ghana"],["2 octobre 1958","Indépendance de la Guinée"],["1960","Année de l’Afrique"],["5 juillet 1962","Indépendance de l’Algérie"],["25 mai 1963","Création de l’OUA"],["1994","Mandela élu président"],["1956","Loi-cadre Defferre"],["1946","Création du RDA à Bamako"],["2002","Naissance de l’Union africaine"]],
+q:[
+["Qu’appelle-t-on la décolonisation ?","L’accession des colonies à l’indépendance",["La conquête de nouvelles colonies","Le partage de l’Afrique","La création de l’AOF"],null],
+["Quand l’Inde est-elle devenue indépendante ?","Le 15 août 1947",["Le 2 octobre 1958","Le 6 mars 1957","Le 26 janvier 1950"],null],
+["Quel leader indien a prôné la non-violence ?","Gandhi",["Nehru","Sukarno","Hô Chi Minh"],null],
+["Quelle bataille a mis fin à la présence française en Indochine en 1954 ?","Dien Bien Phu",["Stalingrad","Adoua","Sétif"],null],
+["En quelle année a eu lieu la conférence de Bandung ?","1955",["1945","1958","1963"],null],
+["Dans quel pays se trouve Bandung ?","En Indonésie",["En Inde","En Égypte","Au Vietnam"],null],
+["Quel a été le premier pays d’Afrique noire à devenir indépendant ?","Le Ghana",["La Guinée","Le Sénégal","Le Nigeria"],"Le 6 mars 1957, sous la direction de Kwame Nkrumah."],
+["Qui a conduit le Ghana à l’indépendance ?","Kwame Nkrumah",["Ahmed Sékou Touré","Modibo Keïta","Jomo Kenyatta"],null],
+["Pourquoi appelle-t-on 1960 « l’année de l’Afrique » ?","17 pays africains deviennent indépendants",["L’OUA est créée","L’apartheid prend fin","La guerre d’Algérie commence"],null],
+["Quand l’Algérie est-elle devenue indépendante ?","Le 5 juillet 1962",["Le 1er novembre 1954","Le 18 mars 1962","Le 2 mars 1956"],null],
+["Quel mouvement a mené la guerre d’indépendance algérienne ?","Le FLN",["Le RDA","Le PAIGC","L’ANC"],null],
+["Où l’OUA a-t-elle été créée le 25 mai 1963 ?","À Addis-Abeba",["À Accra","À Conakry","À Lagos"],null],
+["Quelle organisation a remplacé l’OUA en 2002 ?","L’Union africaine",["La CEDEAO","L’ONU","L’UEMOA"],null],
+["Qui dirigeait la lutte de libération de la Guinée-Bissau (PAIGC) ?","Amilcar Cabral",["Agostinho Neto","Samora Machel","Patrice Lumumba"],"Il est assassiné à Conakry en janvier 1973."],
+["Quel régime de ségrégation raciale a existé en Afrique du Sud ?","L’apartheid",["L’indigénat","L’assimilation","Le protectorat"],null],
+["En quelle année Nelson Mandela est-il devenu président de l’Afrique du Sud ?","1994",["1990","1980","2002"],null],
+["Quel parti interterritorial a été créé à Bamako en octobre 1946 ?","Le RDA",["Le PDG","Le BDS","L’UPC"],"Rassemblement démocratique africain."],
+["Qui a présidé le RDA ?","Félix Houphouët-Boigny",["Ahmed Sékou Touré","Léopold Sédar Senghor","Modibo Keïta"],null],
+["La loi-cadre de 1956 porte le nom de…","Gaston Defferre",["Lamine Guèye","Charles de Gaulle","Félix Éboué"],"Elle crée des conseils de gouvernement élus au suffrage universel dans les territoires."],
+["Quel pays de l’Afrique australe est devenu indépendant le 21 mars 1990 ?","La Namibie",["Le Zimbabwe","Le Mozambique","L’Angola"],null],
+["Le Maroc et la Tunisie sont devenus indépendants en…","1956",["1951","1958","1962"],null],
+["Le Kenya a lutté pour son indépendance avec la révolte des…","Mau Mau",["Cipayes","Boxers","Boers"],null],
+["En quelle année l’Angola et le Mozambique sont-ils devenus indépendants ?","1975",["1960","1965","1980"],null]
+]},
+
+{ id:"h8", m:"H", t:"La Guinée : de l’indépendance à nos jours",
+fiche:[
+"1947 : création du Parti démocratique de Guinée (PDG), section guinéenne du RDA.",
+"Ahmed Sékou Touré, né en 1922 à Faranah, est d’abord syndicaliste : il dirige la grande grève générale de 1953, qui dure plus de deux mois.",
+"1957 : avec la loi-cadre, il devient vice-président du Conseil de gouvernement.",
+"25 août 1958 : discours devant le général de Gaulle à Conakry : « Nous préférons la pauvreté dans la liberté à la richesse dans l’esclavage. »",
+"28 septembre 1958 : la Guinée vote « Non » (environ 95 %) au référendum sur la Communauté française.",
+"2 octobre 1958 : proclamation de l’indépendance ; Sékou Touré devient le premier président.",
+"12 décembre 1958 : la Guinée est admise à l’ONU. 23 novembre 1958 : Union Ghana-Guinée, élargie au Mali en 1960-1961.",
+"1er mars 1960 : création du franc guinéen ; la Guinée quitte la zone franc. Le syli le remplace de 1972 à 1986.",
+"25 mai 1963 : le Guinéen Diallo Telli devient le premier secrétaire général de l’OUA.",
+"22 novembre 1970 : agression portugaise contre Conakry (opération « Mar Verde »).",
+"26 mars 1984 : mort de Sékou Touré. 3 avril 1984 : l’armée prend le pouvoir (CMRN) ; Lansana Conté devient président.",
+"23 décembre 1990 : adoption de la Loi fondamentale, qui ouvre le multipartisme. 1993 : première élection présidentielle pluraliste.",
+"22 décembre 2008 : mort de Lansana Conté ; le CNDD de Moussa Dadis Camara prend le pouvoir. 28 septembre 2009 : massacre du stade de Conakry.",
+"2010 : Alpha Condé devient le premier président élu au terme d’une élection reconnue comme démocratique.",
+"5 septembre 2021 : le CNRD, dirigé par le colonel Mamadi Doumbouya, prend le pouvoir."
+],
+assoc:[["1947","Création du PDG"],["1953","Grande grève générale syndicale"],["25 août 1958","Discours de Sékou Touré devant de Gaulle"],["28 septembre 1958","Référendum : la Guinée vote Non"],["2 octobre 1958","Proclamation de l’indépendance"],["12 décembre 1958","Admission de la Guinée à l’ONU"],["1er mars 1960","Création du franc guinéen"],["22 novembre 1970","Agression portugaise"],["3 avril 1984","Prise du pouvoir par le CMRN"],["1990","Adoption de la Loi fondamentale"],["2010","Élection d’Alpha Condé"],["5 septembre 2021","Prise du pouvoir par le CNRD"]],
+q:[
+["Quand la Guinée a-t-elle obtenu son indépendance ?","Le 2 octobre 1958",["Le 28 septembre 1958","Le 25 août 1958","Le 1er mars 1960"],null],
+["Qu’a voté la Guinée au référendum du 28 septembre 1958 ?","Non à la Communauté française",["Oui à la Communauté française","L’union avec le Ghana","Le maintien dans l’AOF"],"C’est le seul territoire à avoir voté non, ce qui entraîne l’indépendance immédiate."],
+["À quelle date Sékou Touré a-t-il prononcé son discours face au général de Gaulle ?","Le 25 août 1958",["Le 28 septembre 1958","Le 2 octobre 1958","Le 1er mars 1960"],null],
+["Complète : « Nous préférons la pauvreté dans la liberté à… »","la richesse dans l’esclavage",["la paix dans la soumission","l’abondance sans dignité","la guerre dans l’honneur"],null],
+["En quelle année le PDG a-t-il été créé ?","1947",["1958","1953","1984"],null],
+["Le PDG était la section guinéenne de quel parti ?","Le RDA",["Le BDS","La SFIO","Le PAIGC"],null],
+["Dans quelle ville est né Ahmed Sékou Touré ?","Faranah",["Kankan","Conakry","Siguiri"],null],
+["En quelle année Sékou Touré a-t-il dirigé une grande grève générale de plus de deux mois ?","1953",["1947","1958","1946"],"Cette grève impose l’application du nouveau Code du travail outre-mer."],
+["Quel poste Sékou Touré occupe-t-il en 1957 ?","Vice-président du Conseil de gouvernement",["Président de la République","Gouverneur de la Guinée","Secrétaire général de l’OUA"],null],
+["Quand la Guinée a-t-elle été admise à l’ONU ?","Le 12 décembre 1958",["Le 2 octobre 1958","Le 25 mai 1963","Le 24 octobre 1945"],null],
+["Avec quel pays la Guinée a-t-elle formé une union dès novembre 1958 ?","Le Ghana",["Le Sénégal","La Côte d’Ivoire","Le Liberia"],"Le Mali rejoint ensuite l’union."],
+["Quand la Guinée a-t-elle créé sa propre monnaie, le franc guinéen ?","Le 1er mars 1960",["Le 2 octobre 1958","En 1972","En 1986"],null],
+["Quelle monnaie a remplacé le franc guinéen de 1972 à 1986 ?","Le syli",["Le franc CFA","Le cedi","Le dalasi"],null],
+["Quel Guinéen fut le premier secrétaire général de l’OUA ?","Diallo Telli",["Louis Lansana Beavogui","Saïfoulaye Diallo","Fodéba Keïta"],null],
+["Quel pays a attaqué Conakry le 22 novembre 1970 ?","Le Portugal",["La France","Le Sénégal","L’Angleterre"],"L’opération « Mar Verde » visait aussi le PAIGC installé à Conakry."],
+["Quand Ahmed Sékou Touré est-il mort ?","Le 26 mars 1984",["Le 3 avril 1984","Le 2 octobre 1983","Le 22 décembre 2008"],null],
+["Qui a dirigé la Guinée de 1984 à 2008 ?","Lansana Conté",["Moussa Dadis Camara","Alpha Condé","Louis Lansana Beavogui"],null],
+["Comment s’appelait le comité militaire qui a pris le pouvoir le 3 avril 1984 ?","Le CMRN",["Le CNDD","Le CNRD","Le PDG"],"Comité militaire de redressement national."],
+["Quel texte adopté en 1990 a ouvert la voie au multipartisme ?","La Loi fondamentale",["La loi-cadre","La Charte de Kurukan Fuga","Le code de l’indigénat"],null],
+["Quel comité a pris le pouvoir en décembre 2008 ?","Le CNDD",["Le CMRN","Le CNRD","Le CNT"],"Conduit par Moussa Dadis Camara."],
+["Qui a été élu président de la Guinée en 2010 ?","Alpha Condé",["Cellou Dalein Diallo","Sidya Touré","Lansana Kouyaté"],null],
+["Quel comité a pris le pouvoir le 5 septembre 2021 ?","Le CNRD",["Le CNDD","Le CMRN","Le CNSP"],null],
+["Où se trouve le Stade du 28-Septembre, dont le nom rappelle le référendum de 1958 ?","À Conakry",["À Kankan","À Labé","À Nzérékoré"],null]
+]},
+
+{ id:"h9", m:"H", t:"Vocabulaire d’histoire (définitions)",
+fiche:[
+"Impérialisme : volonté d’un État d’étendre sa domination politique, économique et culturelle sur d’autres territoires.",
+"Colonisation : occupation et exploitation d’un territoire par une puissance étrangère.",
+"Révolution industrielle : passage d’une économie agricole et artisanale à une économie industrielle fondée sur les machines.",
+"Progrès scientifique et technique : ensemble des découvertes et inventions qui améliorent les connaissances et les conditions de vie (ex. : vaccin, électricité, téléphone).",
+"Protectorat : territoire qui garde son chef mais est placé sous le contrôle d’une puissance étrangère.",
+"Résistance : lutte armée ou pacifique contre l’occupation étrangère.",
+"Almamy : chef à la fois politique et religieux dans un État musulman (Fouta-Djalon, empire de Samory).",
+"Assimilation : politique visant à faire adopter aux colonisés la langue et la culture du colonisateur.",
+"Travail forcé : travail obligatoire et non payé imposé aux colonisés.",
+"Armistice : accord qui arrête les combats.",
+"Mandat : territoire confié par la SDN à une puissance chargée de l’administrer.",
+"Décolonisation : processus par lequel une colonie accède à l’indépendance.",
+"Panafricanisme : mouvement qui prône l’unité et la solidarité des peuples africains.",
+"Non-alignement : refus de s’engager aux côtés des États-Unis ou de l’URSS pendant la guerre froide.",
+"Apartheid : régime de ségrégation raciale en Afrique du Sud (1948-1991)."
+],
+assoc:[["Impérialisme","Domination d’un État sur d’autres territoires"],["Protectorat","Territoire contrôlé qui garde son chef"],["Armistice","Accord qui arrête les combats"],["Décolonisation","Accession d’une colonie à l’indépendance"],["Panafricanisme","Unité et solidarité des peuples africains"],["Apartheid","Ségrégation raciale en Afrique du Sud"],["Assimilation","Imposer la culture du colonisateur"],["Travail forcé","Travail obligatoire et non payé"]],
+q:[
+["L’impérialisme est…","la volonté d’un État d’étendre sa domination sur d’autres territoires",["le refus de toute colonisation","l’union de plusieurs pays africains","un système de partage des terres"],null],
+["Un protectorat est un territoire…","qui garde son chef mais est contrôlé par une puissance étrangère",["totalement indépendant","directement annexé à la métropole","confié à l’ONU"],null],
+["La révolution industrielle désigne…","le passage d’une économie agricole à une économie fondée sur les machines",["une révolte d’ouvriers","la chute d’un roi","la découverte de l’Amérique"],null],
+["Le progrès scientifique et technique, c’est…","l’ensemble des découvertes et inventions qui améliorent la vie",["l’augmentation de la population","l’exploitation des colonies","la création d’empires"],null],
+["Un armistice est…","un accord qui arrête les combats",["un traité de commerce","une déclaration de guerre","une alliance militaire"],null],
+["La décolonisation est…","l’accession d’une colonie à l’indépendance",["la conquête d’un territoire","la création d’un protectorat","le partage de l’Afrique"],null],
+["Le panafricanisme est un mouvement qui prône…","l’unité des peuples africains",["la colonisation de l’Afrique","la séparation des races","le retour à la monarchie"],null],
+["Le non-alignement signifie…","refuser de s’engager dans un des deux blocs de la guerre froide",["s’allier aux États-Unis","s’allier à l’URSS","quitter l’ONU"],null],
+["L’assimilation coloniale consiste à…","faire adopter aux colonisés la culture du colonisateur",["laisser les chefs locaux gouverner","accorder l’indépendance","interdire l’école"],null],
+["Le travail forcé est…","un travail obligatoire et non payé imposé aux colonisés",["un travail bien payé en usine","le travail des esclaves en Amérique uniquement","un service militaire volontaire"],null],
+["Un mandat (après 1919) est…","un territoire confié par la SDN à une puissance pour l’administrer",["un ordre de mission militaire","un mandat présidentiel","une colonie indépendante"],null],
+["L’apartheid était…","un régime de ségrégation raciale en Afrique du Sud",["un parti politique guinéen","une organisation régionale","une forme de protectorat"],null],
+["La colonisation, c’est…","l’occupation et l’exploitation d’un territoire par une puissance étrangère",["l’indépendance d’un pays","l’union de deux pays","l’exploration scientifique"],null],
+["Le prolétariat désigne…","la classe des ouvriers",["la classe des patrons","les propriétaires terriens","les commerçants"],null],
+["Un almamy est…","un chef politique et religieux musulman",["un soldat de Samory","un griot","un administrateur colonial"],null]
+]},
+
+/* ===================== GÉOGRAPHIE ===================== */
+{ id:"g1", m:"G", t:"L’Afrique : généralités et relief",
+fiche:[
+"L’Afrique couvre environ 30 millions de km² ; c’est un continent massif, aux côtes peu découpées. Elle compte 54 États.",
+"Elle s’étend de 37° N à 35° S environ ; l’équateur la coupe à peu près en son milieu. Elle est traversée par les deux tropiques.",
+"Longueur nord-sud : environ 8 000 km (du cap Blanc en Tunisie au cap des Aiguilles en Afrique du Sud). Largeur est-ouest : environ 7 500 km (du cap Vert au Sénégal au cap Guardafui en Somalie).",
+"Limites : mer Méditerranée au nord, océan Atlantique à l’ouest, océan Indien à l’est, mer Rouge au nord-est.",
+"Liens avec les autres continents : le détroit de Gibraltar (environ 15 km) la sépare de l’Europe ; l’isthme de Suez la relie à l’Asie.",
+"Îles : Madagascar (la plus grande), Cap-Vert, Comores, Maurice, Seychelles, Sao Tomé-et-Principe, la Réunion.",
+"Relief dominé par les plateaux (altitude moyenne 600-700 m) ; plaines rares et étroites, surtout côtières.",
+"Grandes cuvettes (bassins) : Congo (la plus vaste), Niger, Tchad, Kalahari, haut Nil, Zambèze.",
+"Afrique de l’Est : fossés d’effondrement (Rift) avec lacs tectoniques (Victoria, Tanganyika, Malawi, Kivu, Albert, Édouard) et volcans.",
+"Kilimandjaro (Tanzanie) : 5 895 m, point culminant de l’Afrique. Mont Kenya : 5 199 m. Ruwenzori (« montagnes de la Lune ») : 5 109 m.",
+"Chaînes plissées aux extrémités : l’Atlas au nord-ouest (Djebel Toubkal, 4 165 m) et les chaînes du Cap au sud.",
+"Mont Cameroun (4 070 m), volcan actif sur la côte du golfe de Guinée. Tibesti (Tchad) au Sahara.",
+"Point le plus bas : lac Assal (Djibouti), environ 155 m sous le niveau de la mer."
+],
+assoc:[["5 895 m","Kilimandjaro"],["4 165 m","Djebel Toubkal (Atlas)"],["4 070 m","Mont Cameroun"],["5 199 m","Mont Kenya"],["15 km","Détroit de Gibraltar"],["54","Nombre d’États africains"],["30 millions de km²","Superficie de l’Afrique"],["−155 m","Lac Assal"]],
+q:[
+["Quelle est la superficie approximative de l’Afrique ?","30 millions de km²",["10 millions de km²","45 millions de km²","3 millions de km²"],null],
+["Combien d’États compte l’Afrique ?","54",["48","56","60"],null],
+["Quel est le point culminant de l’Afrique ?","Le Kilimandjaro",["Le mont Kenya","Le mont Cameroun","Le Djebel Toubkal"],"5 895 m, en Tanzanie."],
+["Dans quel pays se trouve le Kilimandjaro ?","La Tanzanie",["Le Kenya","L’Éthiopie","L’Ouganda"],null],
+["Quelle forme de relief domine en Afrique ?","Les plateaux",["Les plaines","Les hautes montagnes","Les deltas"],null],
+["Quel détroit sépare l’Afrique de l’Europe ?","Le détroit de Gibraltar",["Le détroit de Bab-el-Mandeb","Le détroit d’Ormuz","Le Bosphore"],"Il mesure environ 15 km de large."],
+["Qu’est-ce qui relie l’Afrique à l’Asie ?","L’isthme de Suez",["Le détroit de Gibraltar","La mer Rouge","Le canal du Mozambique"],null],
+["Quelle est la plus grande île africaine ?","Madagascar",["Le Cap-Vert","Maurice","Zanzibar"],null],
+["Quelle est la plus vaste cuvette d’Afrique ?","La cuvette du Congo",["La cuvette du Tchad","La cuvette du Niger","Le Kalahari"],null],
+["Comment appelle-t-on les grandes fractures de l’Afrique de l’Est ?","Les fossés d’effondrement (Rift)",["Les chaînes plissées","Les cuvettes","Les deltas"],null],
+["Quelle chaîne de montagnes plissées se trouve au nord-ouest de l’Afrique ?","L’Atlas",["Le Drakensberg","L’Adamaoua","Le Tibesti"],null],
+["Quel est le point culminant de l’Atlas ?","Le Djebel Toubkal",["Le Kilimandjaro","Le Ras Dashen","L’Emi Koussi"],null],
+["Quel océan borde l’Afrique à l’est ?","L’océan Indien",["L’océan Atlantique","L’océan Pacifique","L’océan Arctique"],null],
+["Quelle mer borde l’Afrique au nord ?","La mer Méditerranée",["La mer Rouge","La mer Noire","La mer Caspienne"],null],
+["Quelle ligne imaginaire coupe l’Afrique à peu près en son milieu ?","L’équateur",["Le tropique du Cancer","Le méridien de Greenwich","Le tropique du Capricorne"],null],
+["Quel volcan actif se trouve au bord du golfe de Guinée ?","Le mont Cameroun",["Le Kilimandjaro","Le mont Kenya","Le Nimba"],null],
+["Où se trouve le point le plus bas d’Afrique (lac Assal) ?","À Djibouti",["En Égypte","En Éthiopie","En Tunisie"],null],
+["Quel cap marque l’extrémité sud de l’Afrique ?","Le cap des Aiguilles",["Le cap Vert","Le cap Guardafui","Le cap Blanc"],"Le cap de Bonne-Espérance est plus connu, mais l’extrémité sud est le cap des Aiguilles."],
+["Quel cap est le point le plus à l’ouest de l’Afrique ?","Le cap Vert (Sénégal)",["Le cap Blanc","Le cap des Aiguilles","Le cap Bon"],null],
+["Le Ruwenzori est surnommé…","les montagnes de la Lune",["le toit de l’Afrique","le château d’eau","la corne de l’Afrique"],null]
+]},
+
+{ id:"g2", m:"G", t:"L’Afrique : climats, végétation et hydrographie",
+fiche:[
+"L’Afrique est surtout située dans la zone intertropicale : c’est le continent le plus chaud.",
+"Climat équatorial (bassin du Congo, golfe de Guinée) : chaud (environ 25 °C) et humide toute l’année, 2 000 à 4 000 mm de pluie. Végétation : forêt dense toujours verte.",
+"Climats tropicaux : une saison sèche et une saison des pluies ; pluies de 250 à 2 000 mm, qui diminuent en s’éloignant de l’équateur. Végétation : forêt claire, savane, forêt-galerie le long des cours d’eau.",
+"Climat désertique (Sahara, Kalahari) : moins de 250 mm de pluie, fortes chaleurs le jour et nuits froides. Végétation : steppe, oasis. Vent : l’harmattan.",
+"Climat méditerranéen (extrême nord et extrême sud) : étés chauds et secs, hivers doux et pluvieux. Végétation : chênes, maquis, garrigue.",
+"Le Sahara (environ 9 millions de km²) est le plus grand désert chaud du monde.",
+"Le Nil (environ 6 700 km), plus long fleuve d’Afrique, naît au lac Victoria et se jette dans la Méditerranée par un delta. Barrage d’Assouan (Égypte).",
+"Le Congo (4 700 km) a le débit le plus puissant d’Afrique (2e au monde) ; il se jette dans l’Atlantique par un estuaire. Barrage d’Inga.",
+"Le Niger (4 200 km) naît en Guinée, traverse le Mali, le Niger, le Bénin (frontière) et le Nigeria, et se jette dans le golfe de Guinée par un delta. Barrage de Kainji (Nigeria).",
+"Le Zambèze (2 700 km) se jette dans l’océan Indien ; barrages de Kariba et de Cahora Bassa ; chutes Victoria.",
+"Le Sénégal (1 700 km) naît en Guinée (Bafing) ; barrages de Manantali (Mali) et de Diama (Sénégal). La Volta : barrage d’Akosombo (Ghana).",
+"Lacs : Victoria (le plus grand d’Afrique, environ 68 000 km²), Tanganyika (le plus long et le plus profond), Malawi, Tchad (lac de cuvette qui rétrécit).",
+"Organismes de bassin : OMVS (fleuve Sénégal), OMVG (fleuve Gambie), ABN (Autorité du bassin du Niger)."
+],
+assoc:[["Nil","Barrage d’Assouan"],["Volta","Barrage d’Akosombo"],["Zambèze","Barrage de Kariba"],["Congo","Barrage d’Inga"],["Niger","Barrage de Kainji"],["Sénégal","Barrage de Manantali"],["Victoria","Plus grand lac d’Afrique"],["Sahara","Plus grand désert chaud du monde"]],
+q:[
+["Quel est le plus long fleuve d’Afrique ?","Le Nil",["Le Congo","Le Niger","Le Zambèze"],null],
+["Où le Nil prend-il sa source ?","Au lac Victoria",["Au lac Tchad","Au Fouta-Djalon","Au lac Tanganyika"],null],
+["Dans quelle mer le Nil se jette-t-il ?","La mer Méditerranée",["La mer Rouge","L’océan Indien","L’océan Atlantique"],null],
+["Quel fleuve africain a le plus fort débit ?","Le Congo",["Le Nil","Le Niger","L’Orange"],"C’est le 2e fleuve du monde par le débit, après l’Amazone."],
+["Dans quel pays le Niger prend-il sa source ?","La Guinée",["Le Mali","Le Niger","Le Nigeria"],null],
+["Par quelle forme d’embouchure le Niger se jette-t-il dans la mer ?","Un delta",["Un estuaire","Une ria","Une cascade"],null],
+["Quel barrage a été construit sur le Nil en Égypte ?","Assouan",["Akosombo","Kariba","Kainji"],null],
+["Le barrage d’Akosombo se trouve sur…","la Volta, au Ghana",["le Niger, au Nigeria","le Zambèze, en Zambie","le Nil, en Égypte"],null],
+["Le barrage de Kariba se trouve sur…","le Zambèze",["le Congo","le Niger","l’Orange"],null],
+["Le barrage de Manantali, au Mali, se trouve sur…","le Bafing (bassin du Sénégal)",["le Niger","la Gambie","la Volta"],null],
+["Dans quel océan se jette le Zambèze ?","L’océan Indien",["L’océan Atlantique","La mer Méditerranée","La mer Rouge"],null],
+["Quel est le plus grand lac d’Afrique ?","Le lac Victoria",["Le lac Tchad","Le lac Tanganyika","Le lac Malawi"],null],
+["Le lac Tchad est un lac…","de cuvette",["tectonique","volcanique","glaciaire"],null],
+["Quelle végétation caractérise le climat équatorial ?","La forêt dense toujours verte",["La savane","La steppe","Le maquis"],null],
+["Quelle végétation caractérise le climat tropical ?","La savane",["La forêt dense","La toundra","La garrigue"],null],
+["Quelle quantité de pluie reçoit le désert chaque année ?","Moins de 250 mm",["Entre 1 000 et 2 000 mm","Plus de 3 000 mm","Environ 800 mm"],null],
+["Quel vent chaud et sec souffle du Sahara ?","L’harmattan",["La mousson","L’alizé austral","Le mistral"],null],
+["Le climat méditerranéen se caractérise par…","des étés chauds et secs et des hivers doux et pluvieux",["des pluies toute l’année","une seule saison sèche de 10 mois","des températures négatives"],null],
+["Quel est le plus grand désert chaud du monde ?","Le Sahara",["Le Kalahari","Le Namib","Le désert de Gobi"],null],
+["Comment appelle-t-on la forêt qui longe les cours d’eau en savane ?","La forêt-galerie",["La forêt claire","La mangrove","La forêt dense"],null],
+["Quel organisme gère le fleuve Sénégal ?","L’OMVS",["L’OMVG","L’ABN","La CEDEAO"],null],
+["Quel organisme gère le fleuve Niger ?","L’ABN (Autorité du bassin du Niger)",["L’OMVS","L’OMVG","L’UEMOA"],null],
+["Les chutes Victoria se trouvent sur…","le Zambèze",["le Nil","le Congo","le Niger"],null]
+]},
+
+{ id:"g3", m:"G", t:"L’Afrique : population, économie et organisations",
+fiche:[
+"L’Afrique compte environ 1,4 milliard d’habitants ; c’est le continent dont la population augmente le plus vite (environ 2,5 % par an).",
+"Population très jeune : plus de 40 % des habitants ont moins de 15 ans. Forte natalité et baisse de la mortalité.",
+"Répartition inégale : fortes densités sur les côtes, les vallées (Nil) et les régions minières ; vides humains dans les déserts et la forêt dense.",
+"Le Nigeria est le pays le plus peuplé d’Afrique. Grandes villes : Le Caire, Lagos, Kinshasa.",
+"L’Afrique est le berceau de l’humanité : les plus anciens restes humains (comme « Lucy ») ont été trouvés en Éthiopie.",
+"Langues : des milliers (swahili, haoussa, pular, bambara, lingala, yoruba…) et des langues héritées de la colonisation (français, anglais, portugais).",
+"Agriculture : base de l’économie, encore souvent traditionnelle. Cultures vivrières (riz, mil, sorgho, manioc, maïs, fonio) et cultures d’exportation (cacao, café, arachide, coton, thé, hévéa, palmier à huile).",
+"La Côte d’Ivoire est le premier producteur mondial de cacao.",
+"Mines : l’Afrique possède une grande part des réserves mondiales de cobalt (RD Congo), de phosphates (Maroc), de bauxite (Guinée), d’or et de diamants (Afrique du Sud, Botswana, Ghana…). Pétrole : Nigeria, Algérie, Libye, Angola.",
+"Industrie faible (environ 2 % de la production mondiale) : manque de capitaux, d’énergie et de techniciens. L’Afrique du Sud est le pays le plus industrialisé.",
+"Problèmes : forte dette extérieure, faibles revenus, croissance démographique, exode rural.",
+"Organisations : Union africaine (2002, siège Addis-Abeba) ; CEDEAO (28 mai 1975, Lagos ; siège Abuja) ; UEMOA (1994, siège Ouagadougou) ; UMA (17 février 1989, Marrakech) ; SADC (1992) ; Union du fleuve Mano (1973)."
+],
+assoc:[["CEDEAO","Créée en 1975 à Lagos"],["UMA","Créée en 1989 à Marrakech"],["UA","Siège à Addis-Abeba"],["UEMOA","Siège à Ouagadougou"],["Nigeria","Pays le plus peuplé d’Afrique"],["Côte d’Ivoire","1er producteur mondial de cacao"],["RD Congo","Cobalt"],["Maroc","Phosphates"]],
+q:[
+["Quel est le pays le plus peuplé d’Afrique ?","Le Nigeria",["L’Égypte","L’Éthiopie","La RD Congo"],null],
+["Combien d’habitants compte environ l’Afrique ?","1,4 milliard",["400 millions","800 millions","3 milliards"],null],
+["Quelle caractéristique décrit le mieux la population africaine ?","Elle est très jeune",["Elle est vieillissante","Elle diminue","Elle est surtout urbaine depuis longtemps"],"Plus de 40 % des Africains ont moins de 15 ans."],
+["Où se trouvent les plus fortes densités de population en Afrique ?","Sur les côtes et dans les vallées fertiles",["Dans le Sahara","Dans la forêt dense","Dans le Kalahari"],null],
+["Dans quel pays a été trouvé le squelette de « Lucy » ?","L’Éthiopie",["L’Égypte","Le Kenya","L’Afrique du Sud"],null],
+["Quel est le premier producteur mondial de cacao ?","La Côte d’Ivoire",["Le Ghana","Le Nigeria","Le Cameroun"],null],
+["Parmi ces cultures, laquelle est une culture vivrière ?","Le manioc",["Le cacao","Le café","Le coton"],null],
+["Parmi ces cultures, laquelle est une culture d’exportation ?","Le café",["Le fonio","Le mil","L’igname"],null],
+["Quel pays africain possède la plus grande part des réserves mondiales de cobalt ?","La RD Congo",["La Zambie","L’Afrique du Sud","Le Gabon"],null],
+["Quel pays africain est le premier pour les réserves de phosphates ?","Le Maroc",["Le Sénégal","La Tunisie","Le Togo"],null],
+["Quel pays africain possède les plus grandes réserves de bauxite du monde ?","La Guinée",["Le Ghana","La Sierra Leone","Le Cameroun"],null],
+["Quel est le pays le plus industrialisé d’Afrique ?","L’Afrique du Sud",["Le Nigeria","L’Égypte","Le Maroc"],null],
+["Quelle part de la production industrielle mondiale l’Afrique réalise-t-elle environ ?","2 %",["20 %","10 %","35 %"],null],
+["En quelle année la CEDEAO a-t-elle été créée ?","1975",["1963","1994","2002"],null],
+["Où se trouve le siège de la CEDEAO ?","À Abuja",["À Lagos","À Dakar","À Accra"],"Elle a été créée à Lagos, mais son siège est à Abuja."],
+["Où se trouve le siège de l’Union africaine ?","À Addis-Abeba",["À Abuja","À Durban","À Nairobi"],null],
+["Quelle organisation regroupe les pays du Maghreb ?","L’UMA",["La SADC","La CEMAC","L’UEMOA"],null],
+["Où se trouve le siège de l’UEMOA ?","À Ouagadougou",["À Dakar","À Bamako","À Abidjan"],null],
+["Quelle organisation regroupe la Guinée, la Sierra Leone, le Liberia et la Côte d’Ivoire ?","L’Union du fleuve Mano",["L’OMVS","L’UMA","La SADC"],null],
+["Quel pays est l’un des grands producteurs de pétrole d’Afrique de l’Ouest ?","Le Nigeria",["Le Mali","Le Burkina Faso","La Guinée"],null],
+["Lequel de ces problèmes freine le développement de l’Afrique ?","Le poids de la dette extérieure",["La faible croissance démographique","Le manque de terres","L’excès d’industries"],null]
+]},
+
+{ id:"g4", m:"G", t:"La Guinée : présentation, structure et relief",
+fiche:[
+"La République de Guinée couvre 245 857 km². Capitale : Conakry. Elle a environ 300 km de côtes sur l’océan Atlantique.",
+"Elle partage ses frontières avec 6 pays : Guinée-Bissau, Sénégal, Mali, Côte d’Ivoire, Liberia et Sierra Leone.",
+"Elle s’étend environ entre 7° et 12° de latitude nord, dans la zone intertropicale.",
+"Découpage : 4 régions naturelles ; 8 régions administratives (Boké, Conakry, Faranah, Kankan, Kindia, Labé, Mamou, Nzérékoré) ; 33 préfectures.",
+"Structure : socle précambrien (granite) recouvert de grès et de sédiments en Basse et Moyenne-Guinée ; gneiss et schistes en Haute-Guinée et Guinée forestière ; alluvions marines sur la côte.",
+"Deux régions de plaines (Basse-Guinée et Haute-Guinée) et deux régions montagneuses (Moyenne-Guinée et Guinée forestière).",
+"Basse-Guinée (Guinée maritime) : plaine côtière découpée par des estuaires appelés rias ; mangrove ; monts Gangan (Kindia), Kakoulima (Coyah), Benna (Forécariah).",
+"Moyenne-Guinée : massif du Fouta-Djalon, vieille montagne aux formes arrondies ; mont Loura (1 538 m, Mali-Yembéring) ; plateaux de bowé (cuirasses latéritiques).",
+"Haute-Guinée : plateaux et hautes plaines de savane, drainés par le Niger et ses affluents ; quelques sommets isolés.",
+"Guinée forestière : dorsale guinéenne ; monts Simandou (pic de Fon, 1 656 m), Ziama (Macenta) et Nimba (1 752 m, Lola), point culminant de la Guinée.",
+"Le mont Nimba (réserve naturelle) est partagé avec la Côte d’Ivoire et le Liberia ; il est classé au patrimoine mondial de l’UNESCO."
+],
+assoc:[["1 752 m","Mont Nimba"],["1 538 m","Mont Loura"],["1 656 m","Simandou (pic de Fon)"],["245 857 km²","Superficie de la Guinée"],["6","Nombre de pays frontaliers"],["8","Régions administratives"],["33","Préfectures"],["4","Régions naturelles"]],
+q:[
+["Quelle est la superficie de la Guinée ?","245 857 km²",["120 000 km²","322 463 km²","1 240 000 km²"],null],
+["Avec combien de pays la Guinée a-t-elle une frontière ?","6",["4","5","7"],null],
+["Lequel de ces pays n’a pas de frontière avec la Guinée ?","Le Burkina Faso",["Le Mali","La Sierra Leone","Le Liberia"],null],
+["Quelle est la longueur approximative de la côte guinéenne ?","Environ 300 km",["Environ 50 km","Environ 1 000 km","Environ 3 000 km"],null],
+["Combien de régions naturelles compte la Guinée ?","4",["3","5","8"],null],
+["Combien de régions administratives compte la Guinée ?","8",["4","7","33"],null],
+["Combien de préfectures compte la Guinée ?","33",["8","24","41"],null],
+["Quel est le point culminant de la Guinée ?","Le mont Nimba",["Le mont Loura","Le Simandou","Le Kakoulima"],"1 752 m, dans la préfecture de Lola."],
+["Quelle est l’altitude du mont Nimba ?","1 752 m",["1 538 m","1 425 m","2 010 m"],null],
+["Dans quelle préfecture se trouve le mont Nimba ?","Lola",["Beyla","Macenta","Nzérékoré"],null],
+["Quel est le plus haut sommet du Fouta-Djalon ?","Le mont Loura",["Le mont Nimba","Le mont Gangan","Le mont Ziama"],"1 538 m, près de Mali-Yembéring."],
+["Quelle région naturelle est dominée par le massif du Fouta-Djalon ?","La Moyenne-Guinée",["La Basse-Guinée","La Haute-Guinée","La Guinée forestière"],null],
+["Quelles sont les deux régions de plaines de la Guinée ?","La Basse-Guinée et la Haute-Guinée",["La Moyenne-Guinée et la Guinée forestière","La Basse-Guinée et la Moyenne-Guinée","La Haute-Guinée et la Guinée forestière"],null],
+["Comment appelle-t-on les estuaires découpés de la côte guinéenne ?","Des rias",["Des deltas","Des fjords","Des lagunes"],null],
+["Dans quelle région naturelle se trouvent les monts Simandou et Nimba ?","La Guinée forestière",["La Haute-Guinée","La Moyenne-Guinée","La Basse-Guinée"],null],
+["Comment appelle-t-on la chaîne de montagnes de Guinée forestière ?","La dorsale guinéenne",["L’Atlas","Le Fouta-Djalon","L’Adamaoua"],null],
+["Le mont Kakoulima se trouve près de…","Coyah",["Labé","Kankan","Beyla"],null],
+["Le mont Gangan se trouve à…","Kindia",["Mamou","Dabola","Macenta"],null],
+["De quoi est constitué le socle (soubassement) de la Guinée ?","De roches cristallines précambriennes (granite)",["De roches volcaniques récentes","De sable du Sahara","De calcaire marin récent"],null],
+["Le mont Nimba est partagé avec…","la Côte d’Ivoire et le Liberia",["la Sierra Leone et le Liberia","le Mali et la Côte d’Ivoire","le Sénégal et le Mali"],null],
+["Laquelle de ces villes est le chef-lieu d’une région administrative ?","Nzérékoré",["Lola","Beyla","Macenta"],"Les 8 régions : Boké, Conakry, Faranah, Kankan, Kindia, Labé, Mamou et Nzérékoré."],
+["Quelle forme de relief caractérise surtout la Haute-Guinée ?","Des plateaux et hautes plaines",["Une plaine côtière à mangrove","Un massif montagneux humide","Des dunes de sable"],null]
+]},
+
+{ id:"g5", m:"G", t:"La Guinée : climat, sols, végétation et cours d’eau",
+fiche:[
+"Climat tropical à deux saisons : saison des pluies (environ mai à octobre) et saison sèche (environ novembre à avril).",
+"Deux vents : la mousson, humide, venue de l’océan (sud-ouest), apporte les pluies ; l’harmattan, sec et chaud, venu du Sahara (nord-est), souffle en saison sèche.",
+"Basse-Guinée : climat tropical humide (dit guinéen maritime), très pluvieux (Conakry : environ 4 000 mm par an). Végétation : mangrove sur la côte.",
+"Moyenne-Guinée : climat foutanien (tropical d’altitude), plus frais ; températures basses à Mali et Dalaba. Végétation : savane, prairies d’altitude, bowé dénudés.",
+"Haute-Guinée : climat soudanien, le plus sec et le plus chaud (environ 1 300 à 1 500 mm). Végétation : savane arborée, forêts-galeries.",
+"Guinée forestière : climat subéquatorial, longue saison des pluies (environ 8 à 9 mois). Végétation : forêt dense humide (forêt de Ziama, de Diécké).",
+"Sols : ferralitiques (les plus répandus), hydromorphes (gorgés d’eau, propices au riz), cuirasses latéritiques ou bowé (stériles), sols forestiers riches en humus.",
+"La Guinée est le « château d’eau de l’Afrique de l’Ouest » : de nombreux fleuves y prennent leur source (Niger, Sénégal, Gambie…).",
+"Bassin du Niger (Haute-Guinée et Guinée forestière) : le Niger naît sur la dorsale guinéenne (région de Faranah) ; affluents Tinkisso (rive gauche), Niandan, Milo, Sankarani (rive droite). Il arrose Faranah, Kouroussa, Siguiri.",
+"Bassin du Sénégal : le Bafing naît près de Mamou et traverse Tougué et Dinguiraye.",
+"Gambie : naît près de Labé, traverse le Sénégal et la Gambie. Koliba (Corubal) : coule vers la Guinée-Bissau.",
+"Fleuves côtiers de Basse-Guinée : Konkouré, Fatala, Tinguilinta, Cogon, Kolenté… Ils se jettent dans des rias.",
+"Barrages : Garafiri, Kaléta et Souapiti sur le Konkouré ; Kinkon (Pita), Tinkisso (Dabola).",
+"Importance des cours d’eau : hydroélectricité, irrigation, pêche, eau potable, transport. Organismes : OMVS, OMVG, ABN (créée à Faranah en 1980)."
+],
+assoc:[["Konkouré","Barrages de Garafiri, Kaléta et Souapiti"],["Niger","Prend sa source sur la dorsale guinéenne"],["Bafing","Branche-mère du fleuve Sénégal"],["Gambie","Prend sa source près de Labé"],["Mousson","Vent humide venu de l’océan"],["Harmattan","Vent sec venu du Sahara"],["Basse-Guinée","Mangrove et forte pluviométrie"],["Haute-Guinée","Climat soudanien, savane"],["Guinée forestière","Climat subéquatorial, forêt dense"],["Moyenne-Guinée","Climat foutanien, plus frais"]],
+q:[
+["Pourquoi la Guinée est-elle appelée « château d’eau de l’Afrique de l’Ouest » ?","De nombreux grands fleuves y prennent leur source",["Elle reçoit peu de pluie","Elle a beaucoup de lacs","Elle possède de grands barrages depuis 1900"],null],
+["Lequel de ces fleuves prend sa source en Guinée ?","Le Niger",["Le Nil","La Volta","Le Congo"],null],
+["Quel vent humide apporte les pluies en Guinée ?","La mousson",["L’harmattan","Le sirocco","L’alizé du nord-est"],null],
+["Quel vent sec souffle en Guinée pendant la saison sèche ?","L’harmattan",["La mousson","Le mistral","Le khamsin"],null],
+["Quelle région de Guinée reçoit le plus de pluie ?","La Basse-Guinée (côte)",["La Haute-Guinée","La Moyenne-Guinée","Aucune, elles sont égales"],"Conakry reçoit environ 4 000 mm de pluie par an."],
+["Quel type de climat règne en Haute-Guinée ?","Soudanien",["Subéquatorial","Foutanien","Guinéen maritime"],null],
+["Quel type de climat règne en Guinée forestière ?","Subéquatorial",["Soudanien","Désertique","Méditerranéen"],null],
+["Quel type de climat règne en Moyenne-Guinée ?","Foutanien (tropical d’altitude)",["Soudanien","Subéquatorial","Sahélien"],null],
+["Quelle végétation borde la côte de Basse-Guinée ?","La mangrove",["La steppe","La forêt dense","La savane arborée"],null],
+["Quels sont les sols les plus répandus en Guinée ?","Les sols ferralitiques",["Les sols sableux","Les sols volcaniques","Les sols calcaires"],null],
+["Comment appelle-t-on les plateaux dénudés à cuirasse latéritique du Fouta ?","Les bowé (bowal au singulier)",["Les rias","Les oueds","Les tannes"],null],
+["Quels sols, gorgés d’eau, conviennent bien à la riziculture ?","Les sols hydromorphes",["Les bowé","Les sols ferralitiques secs","Les cuirasses"],null],
+["Quel affluent du Niger arrose Dabola ?","Le Tinkisso",["Le Milo","Le Konkouré","Le Bafing"],null],
+["Quel affluent du Niger passe à Kankan ?","Le Milo",["Le Tinkisso","La Fatala","Le Cogon"],null],
+["Sous quel nom le fleuve Sénégal prend-il sa source en Guinée ?","Le Bafing",["Le Bakoye","La Falémé","Le Koliba"],null],
+["Près de quelle ville le Bafing prend-il sa source ?","Mamou",["Labé","Faranah","Kankan"],null],
+["Près de quelle ville la Gambie prend-elle sa source ?","Labé",["Mamou","Boké","Kissidougou"],null],
+["Vers quel pays coule le Koliba (Corubal) ?","La Guinée-Bissau",["Le Sénégal","Le Mali","La Sierra Leone"],null],
+["Sur quel fleuve sont construits les barrages de Garafiri, Kaléta et Souapiti ?","Le Konkouré",["Le Niger","Le Bafing","La Fatala"],null],
+["Quel barrage hydroélectrique a été mis en service sur le Konkouré en 2015 ?","Kaléta",["Garafiri","Kinkon","Souapiti"],"Souapiti, en amont, a suivi en 2021."],
+["Le barrage de Kinkon se trouve dans la préfecture de…","Pita",["Dabola","Boké","Siguiri"],null],
+["Quelles villes de Haute-Guinée sont arrosées par le Niger ?","Faranah, Kouroussa et Siguiri",["Labé, Pita et Mamou","Boké, Boffa et Dubréka","Macenta, Lola et Beyla"],null],
+["Quel organisme de bassin a été créé à Faranah en 1980 ?","L’ABN (Autorité du bassin du Niger)",["L’OMVS","L’OMVG","La CEDEAO"],null],
+["Lequel de ces fleuves est un fleuve côtier de Basse-Guinée ?","La Fatala",["Le Milo","Le Niandan","Le Bafing"],null],
+["Quand a lieu la saison des pluies en Guinée ?","Environ de mai à octobre",["De novembre à avril","De janvier à mars","Toute l’année sans interruption"],null],
+["Quelle forêt classée se trouve en Guinée forestière ?","La forêt de Ziama",["La forêt de la Tamba","La forêt de Bamba","La forêt de Kakoulima"],null]
+]},
+
+{ id:"g6", m:"G", t:"La Guinée : population et économie",
+fiche:[
+"Population : 10 523 261 habitants au recensement de 2014 (RGPH) ; environ 14 millions aujourd’hui. Population jeune, en forte croissance.",
+"Grands groupes : Soussou (Basse-Guinée), Peuls (Moyenne-Guinée), Malinké (Haute-Guinée), et en Guinée forestière les Kissi, Toma (Loma), Guerzé (Kpellè), Manon…",
+"Langue officielle : le français ; langues nationales : soussou, pular, maninka, kissi, toma, guerzé…",
+"Conakry est la capitale et la plus grande ville ; autres grandes villes : Nzérékoré, Kankan, Kindia, Labé, Boké.",
+"Agriculture : occupe la majorité des actifs. Riz (aliment de base), fonio, manioc, maïs, arachide. Exportation : café (Guinée forestière), banane et ananas (Kindia), coton (Haute-Guinée), hévéa et palmier à huile (SOGUIPAH à Diécké).",
+"Élevage : bœufs de race N’Dama, résistante à la maladie du sommeil (trypanotolérante), surtout en Moyenne et Haute-Guinée.",
+"Mines : la Guinée possède environ un tiers des réserves mondiales de bauxite. Boké/Sangarédi (CBG, exportation par le port de Kamsar), Fria (première usine d’alumine d’Afrique, 1960), Kindia (CBK, Débélé).",
+"Fer : Simandou (Guinée forestière) et Nimba. Or : Siguiri (Haute-Guinée). Diamants : Banankoro (Kérouané).",
+"Énergie : fort potentiel hydroélectrique ; barrages de Garafiri (75 MW), Kaléta (240 MW) et Souapiti (450 MW) sur le Konkouré.",
+"Transports : port autonome de Conakry, port minéralier de Kamsar ; aéroport international Ahmed Sékou Touré (Conakry-Gbessia) ; ancien chemin de fer Conakry–Kankan (662 km).",
+"Monnaie : le franc guinéen (GNF). La Guinée est membre de la CEDEAO, de l’OMVS, de l’OMVG, de l’ABN et de l’Union du fleuve Mano.",
+"Problèmes : faible transformation des matières premières, routes insuffisantes, accès limité à l’électricité, exode rural vers Conakry."
+],
+assoc:[["Boké / Sangarédi","Bauxite (CBG)"],["Fria","Première usine d’alumine d’Afrique"],["Siguiri","Or"],["Banankoro","Diamants"],["Simandou","Minerai de fer"],["Kamsar","Port minéralier"],["Kindia","Banane et ananas"],["N’Dama","Race bovine trypanotolérante"],["Souapiti","Barrage de 450 MW"],["Diécké","Hévéa et palmier à huile"]],
+q:[
+["Combien d’habitants la Guinée comptait-elle au recensement de 2014 ?","Environ 10,5 millions",["Environ 5 millions","Environ 20 millions","Environ 2 millions"],null],
+["Quel groupe est majoritaire en Moyenne-Guinée ?","Les Peuls",["Les Soussou","Les Malinké","Les Kissi"],null],
+["Quel groupe est majoritaire en Haute-Guinée ?","Les Malinké",["Les Peuls","Les Soussou","Les Toma"],null],
+["Quel groupe est majoritaire en Basse-Guinée ?","Les Soussou",["Les Peuls","Les Malinké","Les Guerzé"],null],
+["Lequel de ces peuples vit en Guinée forestière ?","Les Kissi",["Les Baga","Les Nalou","Les Diakhanké"],null],
+["Quelle est la langue officielle de la Guinée ?","Le français",["Le soussou","Le pular","L’anglais"],null],
+["Quel est l’aliment de base des Guinéens ?","Le riz",["Le blé","Le mil","Le sorgho"],null],
+["La Guinée possède les plus grandes réserves mondiales de…","bauxite",["pétrole","cuivre","cobalt"],null],
+["Par quel port est exportée la bauxite de la CBG ?","Kamsar",["Conakry","Benty","Boffa"],null],
+["Quelle ville abrite la première usine d’alumine d’Afrique (1960) ?","Fria",["Kamsar","Sangarédi","Kindia"],null],
+["L’alumine est fabriquée à partir de…","la bauxite",["du fer","de l’or","du diamant"],"L’alumine sert ensuite à produire l’aluminium."],
+["Où se trouve le grand gisement de fer de Simandou ?","En Guinée forestière",["En Basse-Guinée","En Moyenne-Guinée","À Conakry"],null],
+["Quelle ville de Haute-Guinée est célèbre pour ses mines d’or ?","Siguiri",["Labé","Boké","Kindia"],null],
+["Où sont exploités les diamants en Guinée ?","À Banankoro (Kérouané)",["À Fria","À Kamsar","À Dalaba"],null],
+["Quelle région est connue pour la production de banane et d’ananas ?","Kindia",["Kankan","Labé","Siguiri"],null],
+["Quelle région produit surtout le café guinéen ?","La Guinée forestière",["La Basse-Guinée","La Moyenne-Guinée","La Haute-Guinée"],null],
+["Quelle culture d’exportation est surtout pratiquée en Haute-Guinée ?","Le coton",["Le café","L’hévéa","La banane"],null],
+["Quelle race bovine guinéenne résiste à la maladie du sommeil ?","La N’Dama",["Le zébu","La Holstein","La Montbéliarde"],null],
+["Quel barrage guinéen a la plus grande puissance (450 MW) ?","Souapiti",["Garafiri","Kaléta","Kinkon"],null],
+["Comment s’appelle l’aéroport international de Conakry ?","Aéroport Ahmed Sékou Touré (Gbessia)",["Aéroport Lansana Conté","Aéroport du 28-Septembre","Aéroport Samory Touré"],null],
+["Quelle est la monnaie de la Guinée ?","Le franc guinéen",["Le franc CFA","Le syli","Le cedi"],null],
+["Quelle société cultive l’hévéa et le palmier à huile à Diécké ?","La SOGUIPAH",["La CBG","La CBK","La SAG"],null],
+["Le chemin de fer Conakry–Kankan mesurait environ…","662 km",["120 km","1 500 km","300 km"],null],
+["Lequel de ces problèmes freine l’économie guinéenne ?","La faible transformation des matières premières sur place",["Le manque de ressources minières","L’absence de cours d’eau","Le manque de terres agricoles"],null]
+]},
+
+{ id:"g7", m:"G", t:"Vocabulaire de géographie (définitions)",
+fiche:[
+"Bassin hydrographique (ou versant) : territoire arrosé par un fleuve et tous ses affluents.",
+"Gradient thermique : baisse de la température avec l’altitude (environ 0,6 °C tous les 100 m).",
+"Balance commerciale : différence entre la valeur des exportations et celle des importations d’un pays.",
+"Transhumance : déplacement saisonnier des troupeaux à la recherche de pâturages et d’eau.",
+"Déficit pluviométrique : quantité de pluie inférieure à la moyenne habituelle.",
+"Régime d’un fleuve : variations de son débit au cours de l’année. Crue : hautes eaux ; étiage : basses eaux.",
+"Affluent : cours d’eau qui se jette dans un autre. Confluent : lieu où deux cours d’eau se rejoignent.",
+"Delta : embouchure où le fleuve se divise en plusieurs bras. Estuaire : embouchure large en forme d’entonnoir. Ria : vallée envahie par la mer.",
+"Débit : quantité d’eau qui passe en un point en une seconde (m³/s).",
+"Densité de population : nombre moyen d’habitants par km².",
+"Exode rural : départ des habitants des campagnes vers les villes.",
+"Croissance naturelle : différence entre le taux de natalité et le taux de mortalité.",
+"Culture vivrière : culture destinée à nourrir la famille. Culture de rente (d’exportation) : culture destinée à la vente, souvent à l’étranger.",
+"Mousson : vent humide soufflant de l’océan vers le continent. Harmattan : vent sec et chaud venu du Sahara.",
+"Mangrove : forêt de palétuviers des côtes vasées tropicales. Savane : formation herbeuse parsemée d’arbres.",
+"Bowal (pluriel bowé) : plateau dénudé à cuirasse latéritique, stérile."
+],
+assoc:[["Bassin hydrographique","Territoire arrosé par un fleuve et ses affluents"],["Gradient thermique","Baisse de la température avec l’altitude"],["Balance commerciale","Exportations moins importations"],["Transhumance","Déplacement saisonnier des troupeaux"],["Déficit pluviométrique","Pluie inférieure à la moyenne"],["Étiage","Basses eaux d’un fleuve"],["Confluent","Lieu de rencontre de deux cours d’eau"],["Densité","Nombre d’habitants par km²"]],
+q:[
+["Un bassin hydrographique est…","le territoire arrosé par un fleuve et ses affluents",["un barrage sur un fleuve","un lac artificiel","la source d’un fleuve"],null],
+["Le gradient thermique désigne…","la baisse de la température avec l’altitude",["la hausse des pluies sur la côte","la différence entre le jour et la nuit","la vitesse du vent"],null],
+["La balance commerciale est…","la différence entre exportations et importations",["le budget de l’État","la monnaie d’un pays","la production agricole totale"],null],
+["La transhumance est…","le déplacement saisonnier des troupeaux",["la migration des oiseaux","l’exode rural","la rotation des cultures"],null],
+["Un déficit pluviométrique, c’est…","une quantité de pluie inférieure à la moyenne",["une inondation","un excès de pluie","la saison des pluies"],null],
+["L’étiage d’un fleuve correspond à…","ses basses eaux",["ses hautes eaux","sa source","son embouchure"],null],
+["La crue d’un fleuve correspond à…","ses hautes eaux",["ses basses eaux","son assèchement","son embouchure"],null],
+["Un affluent est…","un cours d’eau qui se jette dans un autre",["l’embouchure d’un fleuve","un lac de barrage","la source d’un fleuve"],null],
+["Le confluent est…","le lieu où deux cours d’eau se rejoignent",["l’endroit où un fleuve se jette dans la mer","un barrage","la partie haute d’un fleuve"],null],
+["Un delta est…","une embouchure où le fleuve se divise en plusieurs bras",["une embouchure en forme d’entonnoir","une chute d’eau","une vallée envahie par la mer"],null],
+["Un estuaire est…","une embouchure large en forme d’entonnoir",["une embouchure à plusieurs bras","une île fluviale","un lac salé"],null],
+["Le débit d’un fleuve se mesure en…","m³/s",["km/h","mm","°C"],null],
+["La densité de population est…","le nombre moyen d’habitants par km²",["le nombre total d’habitants","le nombre de naissances par an","la part des jeunes"],null],
+["La croissance naturelle est la différence entre…","le taux de natalité et le taux de mortalité",["les émigrés et les immigrés","les hommes et les femmes","les citadins et les ruraux"],null],
+["Une culture vivrière est destinée…","à nourrir la famille",["à l’exportation","à l’industrie textile","à la fabrication de médicaments"],null],
+["Une culture de rente est destinée…","à la vente, souvent à l’étranger",["uniquement à la consommation familiale","au bétail","aux cérémonies"],null],
+["La mangrove est…","une forêt de palétuviers sur les côtes vasées",["une savane sèche","une forêt de montagne","un désert de sable"],null],
+["L’exode rural est…","le départ des habitants des campagnes vers les villes",["le retour en campagne","l’émigration vers l’Europe","le déplacement des troupeaux"],null],
+["La savane est…","une formation herbeuse parsemée d’arbres",["une forêt dense toujours verte","un désert de pierres","une forêt de palétuviers"],null],
+["Le régime d’un fleuve désigne…","les variations de son débit au cours de l’année",["son tracé sur la carte","sa longueur","le nombre de ses affluents"],null]
+]}
+];
+
+</script>
+<script>
+(() => {
+const $app = document.getElementById('app');
+const BY = Object.fromEntries(CHAPTERS.map(c => [c.id, c]));
+CHAPTERS.forEach(c => c.q.forEach((q, i) => q.id = c.id + '-' + i));
+const ALLQ = CHAPTERS.flatMap(c => c.q.map(q => Object.assign(q, { ch: c.id, m: c.m })));
+const QID = Object.fromEntries(ALLQ.map(q => [q.id, q]));
+const VOCAB = { H: 'h9', G: 'g7' };
+const KEY = 'bepc-gn-hg-v1';
+let S = { seen: {}, exams: [] };
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (_) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} };
+let tab = 'H';
+let timerId = 0;
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pickN = (a, n) => shuffle(a).slice(0, n);
+const mastered = c => c.q.filter(q => S.seen[q.id] && S.seen[q.id].last).length;
+const toReview = () => ALLQ.filter(q => S.seen[q.id] && !S.seen[q.id].last);
+const record = (q, ok) => { const r = S.seen[q.id] || { ok: 0, ko: 0 }; ok ? r.ok++ : r.ko++; r.last = ok; S.seen[q.id] = r; };
+const chapNum = c => CHAPTERS.filter(x => x.m === c.m).indexOf(c) + 1;
+function markDates(t) {
+  const m = t.match(/^((?:Vers |Après |Avant )?[0-9][0-9 ]*(?:er)?(?: [a-zéû]+)?(?: [0-9]{4})?(?:[-–][0-9]{2,4})?(?: \([^)]*\))?) ?: /);
+  if (m && /\d/.test(m[1])) return '<mark>' + esc(m[1]) + '</mark> : ' + esc(t.slice(m[0].length));
+  return esc(t).replace(/\b(1[0-9]{3}|20[0-9]{2})\b/g, '<mark>$1</mark>');
+}
+function stopTimer() { clearInterval(timerId); timerId = 0; }
+function top(title, onBack, extra) {
+  return `<div class="top">${onBack ? '<button class="back" id="back" aria-label="Retour">← Retour</button>' : ''}<div class="tt">${esc(title)}</div>${extra || ''}</div>`;
+}
+function bindBack(fn) { const b = document.getElementById('back'); if (b) b.onclick = fn; }
+function scrollTop() { window.scrollTo(0, 0); }
+
+/* ---------- Accueil ---------- */
+function home() {
+  stopTimer();
+  const total = ALLQ.length, done = ALLQ.filter(q => S.seen[q.id] && S.seen[q.id].last).length;
+  const last = S.exams[S.exams.length - 1], best = S.exams.reduce((m, e) => Math.max(m, e.note), 0);
+  const rev = toReview().length;
+  const list = CHAPTERS.filter(c => c.m === tab);
+  $app.innerHTML = `
+  <div class="hero">
+    <div class="flag" aria-hidden="true"><i></i><i></i><i></i></div>
+    <h1>Réussir le <span>BEPC</span> Histoire-Géo</h1>
+    <p class="sub">Programme guinéen de 10e année : fiches de dates, quiz par chapitre, exercices d’association comme à l’examen, et examens blancs notés sur 20.</p>
+    <div class="stats">
+      <div class="stat"><b>${done}/${total}</b><span>questions maîtrisées</span></div>
+      <div class="stat"><b>${last ? last.note.toFixed(1).replace('.', ',') : '–'}</b><span>dernier examen /20</span></div>
+      <div class="stat"><b>${best ? best.toFixed(1).replace('.', ',') : '–'}</b><span>meilleure note</span></div>
+    </div>
+  </div>
+  <div class="cta">
+    <button class="big exam" id="goExam"><b>Examen blanc</b><span>20 questions, 30 min, noté sur 20</span></button>
+    <button class="big" id="goRev" ${rev ? '' : 'disabled'}><b>À revoir (${rev})</b><span>${rev ? 'Les questions que tu as ratées' : 'Rien à revoir pour l’instant'}</span></button>
+  </div>
+  <div class="seg" role="group" aria-label="Matière">
+    <button aria-pressed="${tab === 'H'}" data-t="H">Histoire</button>
+    <button aria-pressed="${tab === 'G'}" data-t="G">Géographie</button>
+  </div>
+  ${list.map(c => { const m = mastered(c), p = Math.round(m / c.q.length * 100); return `
+    <button class="chap ${c.m}" data-c="${c.id}">
+      <span class="n">${String(chapNum(c)).padStart(2, '0')}</span><span class="ct">${esc(c.t)}</span>
+      <span class="meta"><span>${c.q.length} questions · ${c.assoc.length} à relier</span><span class="bar"><i style="width:${p}%"></i></span><span>${p}%</span></span>
+    </button>`; }).join('')}
+  ${S.exams.length ? `<div class="lbl">Mes examens blancs</div><div class="hist">${S.exams.slice(-5).reverse().map(e => `<div><span>${esc(e.date)} · ${esc(e.label)}</span><b>${e.note.toFixed(1).replace('.', ',')}/20</b></div>`).join('')}</div>` : ''}
+  <p class="foot">Ta progression est enregistrée sur cet appareil. <button class="linkbtn" id="reset">Remettre à zéro</button></p>
+  <div id="resetBox"></div>`;
+  $app.querySelectorAll('.seg button').forEach(b => b.onclick = () => { tab = b.dataset.t; home(); });
+  $app.querySelectorAll('.chap').forEach(b => b.onclick = () => chapter(BY[b.dataset.c], 'fiche'));
+  document.getElementById('goExam').onclick = examSetup;
+  document.getElementById('goRev').onclick = () => quiz(shuffle(toReview()).slice(0, 15), 'À revoir', home);
+  document.getElementById('reset').onclick = () => {
+    document.getElementById('resetBox').innerHTML = `<div class="confirm">Effacer toute ta progression et tes notes ?<div class="nav"><button id="rNo">Annuler</button><button class="pri" id="rYes">Effacer</button></div></div>`;
+    document.getElementById('rNo').onclick = home;
+    document.getElementById('rYes').onclick = () => { S = { seen: {}, exams: [] }; save(); home(); };
+  };
+}
+
+/* ---------- Chapitre ---------- */
+function chapter(c, view) {
+  stopTimer(); scrollTop();
+  const head = top((c.m === 'H' ? 'Histoire ' : 'Géographie ') + chapNum(c), home);
+  let body = '';
+  if (view === 'fiche') body = `<ul class="fiche">${c.fiche.map(f => `<li>${markDates(f)}</li>`).join('')}</ul>
+    <button class="start" id="toQuiz">Faire le quiz du chapitre</button>`;
+  else if (view === 'quiz') body = `<p class="hint">10 questions tirées au hasard, en priorité celles que tu ne maîtrises pas encore. Correction immédiate.</p>
+    <button class="start" id="sQuiz">Commencer le quiz</button>
+    <button class="start" id="sAll" style="background:var(--ink)">Toutes les questions (${c.q.length})</button>`;
+  else body = `<p class="hint">Relie chaque élément de gauche à celui qui lui correspond, comme dans l’exercice d’association du BEPC. Touche un élément à gauche, puis sa réponse à droite.</p>
+    <button class="start" id="sMatch">Commencer</button>`;
+  $app.innerHTML = head + `<h2 class="qtext" style="margin-top:16px">${esc(c.t)}</h2>
+    <div class="tabs" role="group"><button aria-pressed="${view === 'fiche'}" data-v="fiche">Fiche</button><button aria-pressed="${view === 'quiz'}" data-v="quiz">Quiz</button><button aria-pressed="${view === 'match'}" data-v="match">${c.m === 'H' && c.id !== 'h9' ? 'Dates' : 'Relier'}</button></div>` + body;
+  bindBack(home);
+  $app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => chapter(c, b.dataset.v));
+  const back = () => chapter(c, 'quiz');
+  if (view === 'fiche') document.getElementById('toQuiz').onclick = () => chapter(c, 'quiz');
+  if (view === 'quiz') {
+    document.getElementById('sQuiz').onclick = () => {
+      const weak = shuffle(c.q.filter(q => !(S.seen[q.id] && S.seen[q.id].last))), strong = shuffle(c.q.filter(q => S.seen[q.id] && S.seen[q.id].last));
+      quiz(weak.concat(strong).slice(0, 10), c.t, back);
+    };
+    document.getElementById('sAll').onclick = () => quiz(shuffle(c.q), c.t, back);
+  }
+  if (view === 'match') document.getElementById('sMatch').onclick = () => match(c, () => chapter(c, 'match'));
+}
+
+/* ---------- Quiz d'entraînement ---------- */
+function quiz(qs, title, onDone) {
+  let i = 0, good = 0;
+  const show = () => {
+    scrollTop();
+    const q = qs[i], opts = shuffle([q[1], ...q[2]]);
+    $app.innerHTML = top(title, onDone) + `
+      <div class="qhead"><span class="tag ${q.m}">${q.m === 'H' ? 'Histoire' : 'Géo'}</span><span>${i + 1} / ${qs.length}</span><span class="prog"><i style="width:${i / qs.length * 100}%"></i></span></div>
+      <p class="qtext">${esc(q[0])}</p>
+      <div class="opts">${opts.map((o, k) => `<button class="opt" data-k="${k}"><span class="k">${'ABCD'[k]}</span><span>${esc(o)}</span></button>`).join('')}</div>
+      <div id="fb"></div>`;
+    bindBack(onDone);
+    const bs = [...$app.querySelectorAll('.opt')];
+    bs.forEach(b => b.onclick = () => {
+      const pick = opts[+b.dataset.k], ok = pick === q[1];
+      record(q, ok); save(); if (ok) good++;
+      bs.forEach(x => { x.disabled = true; if (opts[+x.dataset.k] === q[1]) x.classList.add('ok'); });
+      if (!ok) b.classList.add('ko');
+      document.getElementById('fb').innerHTML = `<div class="fb ${ok ? 'ok' : 'ko'}"><b>${ok ? 'Bonne réponse' : 'Réponse : ' + esc(q[1])}</b>${q[3] ? esc(q[3]) : ''}</div>
+        <div class="nav"><button class="pri" id="nx">${i + 1 < qs.length ? 'Question suivante' : 'Voir mon résultat'}</button></div>`;
+      document.getElementById('nx').onclick = () => { i++; i < qs.length ? show() : end(); };
+      document.getElementById('nx').focus();
+    });
+  };
+  const end = () => {
+    scrollTop();
+    const n = Math.round(good / qs.length * 20 * 10) / 10;
+    $app.innerHTML = top(title, onDone) + `
+      <div class="score"><b>${good}</b><span>/ ${qs.length}</span></div>
+      <span class="mention ${n < 10 ? 'low' : ''}">${n >= 16 ? 'Excellent' : n >= 12 ? 'Bien' : n >= 10 ? 'Passable' : 'À retravailler'}</span>
+      <p class="hint">Les questions ratées sont ajoutées à « À revoir » sur l’accueil.</p>
+      <div class="nav"><button class="pri" id="again">Recommencer</button><button id="out">Terminer</button></div>`;
+    bindBack(onDone);
+    document.getElementById('again').onclick = () => quiz(shuffle(qs), title, onDone);
+    document.getElementById('out').onclick = onDone;
+  };
+  if (!qs.length) return onDone();
+  show();
+}
+
+/* ---------- Association ---------- */
+function uniquePairs(pairs, n) {
+  const L = new Set(), R = new Set(), out = [];
+  for (const p of shuffle(pairs)) { if (L.has(p[0]) || R.has(p[1])) continue; L.add(p[0]); R.add(p[1]); out.push(p); if (out.length === n) break; }
+  return out;
+}
+function matchBoard(container, pairs, mode, onChange) {
+  // mode 'train' : vérification immédiate ; 'exam' : réponses libres, notées à la fin
+  const rights = shuffle(pairs.map(p => p[1]));
+  const ans = {}; let sel = null;
+  const render = () => {
+    container.innerHTML = `<div class="mgrid"><div class="mcol">${pairs.map((p, i) => {
+      const done = mode === 'train' && ans[i] !== undefined;
+      return `<button class="mi left ${sel === i ? 'act' : ''} ${done ? 'done' : ''}" data-l="${i}">${esc(p[0])}${mode === 'exam' && ans[i] !== undefined ? `<span class="badge">${i + 1}</span>` : ''}</button>`; }).join('')}</div>
+      <div class="mcol">${rights.map((r, j) => {
+        const li = Object.keys(ans).find(k => ans[k] === j);
+        const done = mode === 'train' && li !== undefined;
+        return `<button class="mi ${done ? 'done' : ''}" data-r="${j}">${esc(r)}${mode === 'exam' && li !== undefined ? `<span class="badge">${+li + 1}</span>` : ''}</button>`; }).join('')}</div></div>`;
+    container.querySelectorAll('[data-l]').forEach(b => b.onclick = () => {
+      const i = +b.dataset.l; if (mode === 'train' && ans[i] !== undefined) return;
+      sel = sel === i ? null : i; render();
+    });
+    container.querySelectorAll('[data-r]').forEach(b => b.onclick = () => {
+      const j = +b.dataset.r; if (sel === null) return;
+      if (mode === 'train') {
+        if (Object.values(ans).includes(j)) return;
+        if (rights[j] === pairs[sel][1]) { ans[sel] = j; sel = null; render(); onChange && onChange(Object.keys(ans).length, 0); }
+        else { b.classList.remove('bad'); void b.offsetWidth; b.classList.add('bad'); onChange && onChange(Object.keys(ans).length, 1); }
+      } else {
+        for (const k in ans) if (ans[k] === j) delete ans[k];
+        ans[sel] = j; sel = null; render(); onChange && onChange(Object.keys(ans).length, 0);
+      }
+    });
+  };
+  render();
+  return { score: () => pairs.reduce((s, p, i) => s + (ans[i] !== undefined && rights[ans[i]] === p[1] ? 1 : 0), 0),
+           given: i => ans[i] !== undefined ? rights[ans[i]] : null };
+}
+function match(c, onDone) {
+  scrollTop();
+  const pairs = uniquePairs(c.assoc, Math.min(6, c.assoc.length));
+  let errors = 0;
+  $app.innerHTML = top('Relier · ' + c.t, onDone) + `<div class="qhead"><span>Paires trouvées : <b id="cnt">0</b> / ${pairs.length}</span><span>Erreurs : <b id="err">0</b></span></div><div id="mb"></div><div id="mend"></div>`;
+  bindBack(onDone);
+  matchBoard(document.getElementById('mb'), pairs, 'train', (n, e) => {
+    errors += e; document.getElementById('cnt').textContent = n; document.getElementById('err').textContent = errors;
+    if (n === pairs.length) {
+      document.getElementById('mend').innerHTML = `<div class="fb ok"><b>${errors === 0 ? 'Sans faute !' : 'Terminé'}</b>${errors} erreur${errors > 1 ? 's' : ''} en chemin.</div>
+        <div class="nav"><button class="pri" id="mAgain">Nouvelle série</button><button id="mOut">Terminer</button></div>`;
+      document.getElementById('mAgain').onclick = () => match(c, onDone);
+      document.getElementById('mOut').onclick = onDone;
+    }
+  });
+}
+
+/* ---------- Examen blanc ---------- */
+let examKind = 'HG';
+function examSetup() {
+  stopTimer(); scrollTop();
+  const K = [['HG', 'Histoire et géographie', '10 définitions et questions de cours de chaque matière, 5 dates à relier'],
+             ['H', 'Histoire seulement', 'Définitions, questions de cours, dates à relier'],
+             ['G', 'Géographie seulement', 'Définitions, questions de cours, éléments à relier']];
+  $app.innerHTML = top('Examen blanc', home) + `
+    <h2 class="qtext" style="margin-top:16px">Prépare-toi comme le jour du BEPC</h2>
+    <div class="pick" role="group">${K.map(k => `<button aria-pressed="${examKind === k[0]}" data-k="${k[0]}"><b>${k[1]}</b><span>${k[2]}</span></button>`).join('')}</div>
+    <div class="box"><b>Barème sur 20</b><ol>
+      <li>Partie I – Définitions : 5 questions × 1 point</li>
+      <li>Partie II – Questions de cours : 10 questions × 1 point</li>
+      <li>Partie III – Exercice d’association : 5 paires × 1 point</li></ol>
+      <p class="hint">Durée : 30 minutes. Pas de correction pendant l’épreuve : tu peux revenir sur tes réponses avant de rendre ta copie.</p></div>
+    <button class="start" id="go">Commencer l’examen</button>`;
+  bindBack(home);
+  $app.querySelectorAll('.pick button').forEach(b => b.onclick = () => { examKind = b.dataset.k; examSetup(); });
+  document.getElementById('go').onclick = () => exam(examKind);
+}
+function exam(kind) {
+  const subj = kind === 'HG' ? ['H', 'G'] : [kind];
+  const course = m => ALLQ.filter(q => q.m === m && q.ch !== VOCAB[m]);
+  let defs, cours, pairs;
+  if (kind === 'HG') {
+    defs = pickN(BY.h9.q, 3).concat(pickN(BY.g7.q, 2));
+    cours = pickN(course('H'), 5).concat(pickN(course('G'), 5));
+    pairs = uniquePairs(CHAPTERS.filter(c => c.m === 'H' && c.id !== 'h9').flatMap(c => c.assoc), 5);
+  } else {
+    defs = pickN(BY[VOCAB[kind]].q, 5);
+    cours = pickN(course(kind), 10);
+    pairs = uniquePairs(CHAPTERS.filter(c => c.m === kind && c.id !== VOCAB[kind]).flatMap(c => c.assoc), 5);
+  }
+  const items = defs.map(q => ({ part: 1, q })).concat(cours.map(q => ({ part: 2, q })));
+  items.forEach(it => it.opts = shuffle([it.q[1], ...it.q[2]]));
+  const answers = {}; let i = 0, board = null, confirming = false;
+  const end = Date.now() + 30 * 60 * 1000;
+  const label = kind === 'HG' ? 'Histoire-Géo' : kind === 'H' ? 'Histoire' : 'Géographie';
+  const N = items.length + 1;
+  const tick = () => {
+    const left = Math.max(0, end - Date.now()), el = document.getElementById('tm');
+    if (el) { el.textContent = String(Math.floor(left / 60000)).padStart(2, '0') + ':' + String(Math.floor(left / 1000) % 60).padStart(2, '0'); el.classList.toggle('low', left < 120000); }
+    if (left <= 0) finish();
+  };
+  const dots = () => `<div class="dots">${Array.from({ length: N }, (_, k) => `<button class="${(k < items.length ? answers[k] !== undefined : false) ? 'on' : ''} ${k === i ? 'cur' : ''}" data-d="${k}" aria-label="Question ${k + 1}">${k < items.length ? k + 1 : 'III'}</button>`).join('')}</div>`;
+  const show = () => {
+    scrollTop(); confirming = false;
+    const head = top('Examen blanc · ' + label, null, '<span class="timer" id="tm">30:00</span>');
+    if (i < items.length) {
+      const it = items[i];
+      $app.innerHTML = head + `
+        <div class="qhead"><span>Partie ${it.part === 1 ? 'I – Définitions' : 'II – Questions de cours'}</span><span>${i + 1} / ${N}</span></div>
+        <p class="qtext">${esc(it.q[0])}</p>
+        <div class="opts">${it.opts.map((o, k) => `<button class="opt ${answers[i] === k ? 'sel' : ''}" data-k="${k}"><span class="k">${'ABCD'[k]}</span><span>${esc(o)}</span></button>`).join('')}</div>
+        <div class="nav"><button id="pv" ${i ? '' : 'disabled'}>Précédente</button><button class="pri" id="nx">Suivante</button></div>${dots()}`;
+      $app.querySelectorAll('.opt').forEach(b => b.onclick = () => { answers[i] = +b.dataset.k; $app.querySelectorAll('.opt').forEach(x => x.classList.toggle('sel', x === b)); $app.querySelector(`.dots [data-d="${i}"]`).classList.add('on'); });
+    } else {
+      $app.innerHTML = head + `
+        <div class="qhead"><span>Partie III – Association</span><span>${N} / ${N}</span></div>
+        <p class="qtext">${kind === 'G' ? 'Relie chaque élément à ce qui lui correspond.' : 'Relie chaque date à l’événement qui lui correspond.'}</p>
+        <p class="hint">Touche un élément à gauche, puis sa réponse à droite. Tu peux changer d’avis.</p>
+        <div id="mb"></div>
+        <div class="nav"><button id="pv">Précédente</button><button class="pri" id="nx">Rendre ma copie</button></div><div id="cf"></div>${dots()}`;
+      if (!board) board = { pairs, holder: document.createElement('div') };
+      document.getElementById('mb').replaceWith(board.holder);
+      if (!board.api) board.api = matchBoard(board.holder, pairs, 'exam');
+    }
+    tick();
+    document.getElementById('pv').onclick = () => { if (i) { i--; show(); } };
+    document.getElementById('nx').onclick = () => {
+      if (i < items.length) { i++; show(); return; }
+      const missing = items.length - Object.keys(answers).length;
+      document.getElementById('cf').innerHTML = `<div class="confirm">${missing ? `<b>${missing} question${missing > 1 ? 's' : ''} sans réponse.</b> ` : ''}Rendre ta copie maintenant ?<div class="nav"><button id="cN">Continuer</button><button class="pri" id="cY">Rendre</button></div></div>`;
+      document.getElementById('cN').onclick = () => { document.getElementById('cf').innerHTML = ''; };
+      document.getElementById('cY').onclick = finish;
+    };
+    $app.querySelectorAll('.dots button').forEach(b => b.onclick = () => { i = +b.dataset.d; show(); });
+  };
+  let finished = false;
+  const finish = () => {
+    if (finished) return; finished = true; stopTimer(); scrollTop();
+    let p1 = 0, p2 = 0; const errs = [];
+    items.forEach((it, k) => {
+      const ok = answers[k] !== undefined && it.opts[answers[k]] === it.q[1];
+      record(it.q, ok);
+      if (ok) it.part === 1 ? p1++ : p2++;
+      else errs.push({ q: it.q, you: answers[k] !== undefined ? it.opts[answers[k]] : null });
+    });
+    if (!board) { board = { holder: document.createElement('div') }; board.api = matchBoard(board.holder, pairs, 'exam'); }
+    const p3 = board.api.score();
+    const note = p1 + p2 + p3;
+    const d = new Date();
+    S.exams.push({ date: d.toLocaleDateString('fr-FR'), label, note }); save();
+    const mention = note >= 16 ? 'Très bien' : note >= 14 ? 'Bien' : note >= 12 ? 'Assez bien' : note >= 10 ? 'Passable' : 'Insuffisant';
+    const pairErr = pairs.map((p, k) => ({ p, g: board.api.given(k) })).filter(x => x.g !== x.p[1]);
+    $app.innerHTML = top('Résultat · ' + label, home) + `
+      <div class="score"><b>${note}</b><span>/ 20</span></div>
+      <span class="mention ${note < 10 ? 'low' : ''}">${mention}</span>
+      <div class="parts">
+        <div><span>Partie I – Définitions</span><b>${p1} / 5</b></div>
+        <div><span>Partie II – Questions de cours</span><b>${p2} / 10</b></div>
+        <div><span>Partie III – Association</span><b>${p3} / 5</b></div>
+      </div>
+      ${errs.length || pairErr.length ? `<div class="lbl">Correction de tes erreurs</div><div class="corr">
+        ${errs.map(e => `<div>${esc(e.q[0])}<br>${e.you ? `<span class="you">${esc(e.you)}</span> → ` : '<i>Pas de réponse</i> → '}<span class="good">${esc(e.q[1])}</span>${e.q[3] ? `<p>${esc(e.q[3])}</p>` : ''}</div>`).join('')}
+        ${pairErr.map(x => `<div><b>${esc(x.p[0])}</b><br>${x.g ? `<span class="you">${esc(x.g)}</span> → ` : '<i>Non relié</i> → '}<span class="good">${esc(x.p[1])}</span></div>`).join('')}
+      </div>` : '<div class="fb ok"><b>Copie parfaite !</b>Aucune erreur.</div>'}
+      <div class="nav"><button class="pri" id="again">Nouvel examen</button><button id="out">Accueil</button></div>`;
+    bindBack(home);
+    document.getElementById('again').onclick = () => exam(kind);
+    document.getElementById('out').onclick = home;
+  };
+  show();
+  timerId = setInterval(tick, 1000);
+}
+
+home();
+})();
+</script>
+
+<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
+</body></html>
